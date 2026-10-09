@@ -1,0 +1,550 @@
+.page {
+    min-height: 100vh;
+    background: var(--bg-surface);
+    color: var(--text-1);
+}
+
+.main {
+    margin-left: 220px;
+    min-height: 100vh;
+    padding: 32px 36px;
+}
+
+.title {
+    font-family: var(--font-display);
+    font-size: 22px;
+    font-weight: 800;
+    line-height: 1;
+    letter-spacing: -0.03em;
+    color: var(--text-1);
+}
+
+.subtitle {
+    margin-top: 4px;
+    font-size: 13px;
+    color: var(--text-4);
+}
+
+.header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 28px;
+}
+
+.primaryButton,
+.secondaryButton,
+.rowButton,
+.headerToggle,
+.calendarNavButton,
+.iconButton {
+    border: none;
+    font-family: inherit;
+    cursor: pointer;
+    transition: all 0.12s ease;
+}
+
+.primaryButton {
+    padding: 7px 14px;
+    border-radius: 7px;
+    background: var(--primary);
+    color: var(--on-primary);
+    font-size: 13px;
+    font-weight: 500;
+}
+
+.primaryButton:hover {
+    filter: brightness(1.08);
+}
+
+.secondaryButton {
+    padding: 6px 12px;
+    border-radius: 7px;
+    background: var(--surface-highlight);
+    color: var(--primary);
+    border: 1px solid var(--primary-border);
+    font-size: 13px;
+    font-weight: 500;
+}
+
+.noticeBanner,
+.errorBanner {
+    margin-bottom: 16px;
+    padding: 10px 16px;
+    border-radius: 8px;
+    font-size: 13px;
+}
+
+.noticeBanner {
+    background: var(--surface-highlight);
+    border: 1px solid var(--primary-border);
+    color: var(--primary-text);
+}
+
+.errorBanner {
+    background: var(--status-danger-bg);
+    border: 1px solid var(--status-danger);
+    color: var(--status-danger);
+}
+
+.nextBanner {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 24px;
+    padding: 16px 20px;
+    border-radius: 10px;
+    background: var(--surface-highlight);
+    border: 1px solid var(--primary-border);
+}
+
+.nextDot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--primary);
+    flex-shrink: 0;
+}
+
+.nextCopy {
+    flex: 1;
+    min-width: 0;
+}
+
+.nextLabel {
+    display: block;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--primary);
+}
+
+.nextTitle {
+    margin-top: 2px;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text-1);
+}
+
+.nextMeta {
+    font-size: 13px;
+    color: var(--text-4);
+    white-space: nowrap;
+}
+
+.controls {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 16px;
+}
+
+.filterGroup {
+    display: flex;
+    gap: 4px;
+    align-items: center;
+}
+
+.filterPill,
+.headerToggle {
+    padding: 6px 14px;
+    border-radius: 6px;
+    background: transparent;
+    border: 1px solid transparent;
+    color: var(--text-4);
+    font-size: 13px;
+    font-weight: 400;
+}
+
+.filterPillActive,
+.headerToggleActive {
+    background: var(--surface-highlight);
+    border-color: var(--primary-border);
+    color: var(--primary);
+    font-weight: 500;
+}
+
+.iconButton {
+    width: 32px;
+    height: 32px;
+    border-radius: 6px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    border: 1px solid var(--border-subtle);
+    color: var(--text-4);
+}
+
+.iconButton:hover {
+    color: var(--text-2);
+    background: var(--surface-muted);
+}
+
+.cardShell {
+    background: var(--surface-panel);
+    border: 1px solid var(--border-subtle);
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.tableHeader,
+.tableRow {
+    display: grid;
+    grid-template-columns: 1fr 1fr 180px 110px 120px;
+    gap: 12px;
+    align-items: center;
+    padding: 10px 20px;
+}
+
+.tableHeader {
+    border-bottom: 1px solid var(--border-subtle);
+    background: var(--surface-muted);
+}
+
+.tableHeader > div {
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--text-4);
+}
+
+.tableRow {
+    padding-top: 13px;
+    padding-bottom: 13px;
+    border-bottom: 1px solid var(--border-subtle);
+}
+
+.tableRow:hover {
+    background: var(--surface-muted);
+}
+
+.tableRow:last-child {
+    border-bottom: none;
+}
+
+.serviceName {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text-1);
+}
+
+.rowText {
+    font-size: 13px;
+    color: var(--text-2);
+}
+
+.rowSubtle {
+    margin-top: 2px;
+    font-size: 11px;
+    color: var(--text-4);
+}
+
+.statusBadge,
+.calendarEvent {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 3px 9px;
+    border-radius: 99px;
+    font-size: 11px;
+    font-weight: 500;
+    white-space: nowrap;
+}
+
+.statusConfirmed {
+    background: var(--status-success-bg);
+    border: 1px solid var(--primary-border);
+    color: var(--status-success);
+}
+
+.statusPending {
+    background: var(--status-warning-bg);
+    border: 1px solid var(--status-warning);
+    color: var(--status-warning);
+}
+
+.statusCancelled {
+    background: var(--status-danger-bg);
+    border: 1px solid var(--status-danger);
+    color: var(--status-danger);
+}
+
+.rowActions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 6px;
+}
+
+.rowButton {
+    padding: 4px 8px;
+    border-radius: 5px;
+    background: none;
+    color: var(--text-4);
+    font-size: 11px;
+    font-weight: 500;
+}
+
+.rowButton:hover {
+    color: var(--primary);
+}
+
+.rowButtonDanger:hover {
+    color: var(--status-danger);
+}
+
+.rowButtonConfirm {
+    color: #16a34a;
+    font-weight: 600;
+}
+
+.rowButtonConfirm:hover {
+    color: #15803d;
+}
+
+.emptyState {
+    padding: 48px 20px;
+    text-align: center;
+    color: var(--text-4);
+    font-size: 13px;
+}
+
+.calendarShell {
+    padding: 24px;
+}
+
+.calendarWrap {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.calendarHeader {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.calendarMonth {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text-2);
+}
+
+.calendarNav {
+    display: flex;
+    gap: 4px;
+}
+
+.calendarNavButton {
+    width: 28px;
+    height: 28px;
+    border-radius: 6px;
+    background: var(--surface-highlight);
+    border: 1px solid var(--primary-border);
+    color: var(--primary);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.calendarWeekdays,
+.calendarGrid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 2px;
+}
+
+.calendarWeekday {
+    padding: 4px 0;
+    font-size: 10px;
+    font-weight: 600;
+    text-align: center;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--text-4);
+}
+
+.calendarCell {
+    min-height: 72px;
+    padding: 6px;
+    border-radius: 6px;
+    border: 1px solid var(--border-subtle);
+    background: var(--surface-muted);
+    text-align: left;
+}
+
+.calendarCellEmpty {
+    opacity: 0.3;
+    border-color: transparent;
+    background: transparent;
+    cursor: default;
+}
+
+.calendarCellDay {
+    display: inline-block;
+    margin-bottom: 4px;
+    font-size: 12px;
+    color: var(--text-4);
+}
+
+.calendarCellToday {
+    color: var(--primary);
+    font-weight: 700;
+}
+
+.calendarEvents {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.calendarEvent {
+    max-width: 100%;
+    padding: 2px 5px;
+    border-radius: 3px;
+    font-size: 10px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.calendarMore {
+    font-size: 10px;
+    color: var(--text-4);
+}
+
+.loadingScreen {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    background: var(--bg-surface);
+    color: var(--text-1);
+}
+
+.spinner {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    border: 3px solid var(--border-subtle);
+    border-left-color: var(--primary);
+    animation: spin 1s linear infinite;
+}
+
+.spinning {
+    animation: spin 1s linear infinite;
+}
+
+.modalBackdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 80;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+    background: rgba(3, 8, 12, 0.7);
+}
+
+.modalCard {
+    width: min(420px, 100%);
+    display: grid;
+    gap: 14px;
+    padding: 20px;
+    border-radius: 14px;
+    background: var(--surface-panel);
+    border: 1px solid var(--border-subtle);
+}
+
+.modalCard h3 {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--text-1);
+}
+
+.modalCard label {
+    display: grid;
+    gap: 6px;
+    font-size: 12px;
+    color: var(--text-3);
+}
+
+.modalCard input {
+    padding: 10px 12px;
+    border-radius: 8px;
+    border: 1px solid var(--border-subtle);
+    background: var(--surface-muted);
+    color: var(--text-1);
+}
+
+.modalActions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+}
+
+.modalActions button {
+    padding: 8px 14px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 500;
+    font-family: inherit;
+    cursor: pointer;
+}
+
+.modalActions button:first-child {
+    border: 1px solid var(--border-default);
+    background: transparent;
+    color: var(--text-2);
+}
+
+.modalActions button:last-child {
+    border: none;
+    background: var(--primary);
+    color: var(--on-primary);
+}
+
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+@media (max-width: 1100px) {
+    .tableHeader,
+    .tableRow {
+        grid-template-columns: 1.3fr 1fr 160px 110px 100px;
+    }
+}
+
+@media (max-width: 900px) {
+    .main {
+        margin-left: 0;
+        padding: 20px 16px;
+    }
+
+    .header,
+    .controls,
+    .nextBanner {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .tableHeader {
+        display: none;
+    }
+
+    .tableRow {
+        grid-template-columns: 1fr;
+        gap: 8px;
+    }
+
+    .rowActions {
+        justify-content: flex-start;
+    }
+}

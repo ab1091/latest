@@ -1,0 +1,303 @@
+.page {
+    min-height: 100vh;
+    background: var(--bg-surface);
+    color: var(--text-2);
+}
+
+.main {
+    margin-left: 220px;
+    min-height: 100vh;
+    padding: 32px;
+}
+
+.layout {
+    display: flex;
+    gap: 48px;
+    height: calc(100vh - 140px);
+    overflow: hidden;
+}
+
+.filterRail {
+    width: 280px;
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+.title {
+    font-family: var(--font-display);
+    font-size: 24px;
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    color: var(--text-1);
+}
+
+.subtitle {
+    margin-top: 4px;
+    font-size: 13px;
+    color: var(--text-4);
+}
+
+.filterCard,
+.countCard {
+    border-radius: 16px;
+    background: var(--surface-panel);
+    border: 1px solid var(--border-subtle);
+}
+
+.filterCard {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    padding: 20px;
+}
+
+.field {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.label {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--text-4);
+}
+
+.searchWrap {
+    position: relative;
+}
+
+.searchIcon {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-4);
+}
+
+.input,
+.select {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 14px 14px 14px 40px;
+    border-radius: 12px;
+    background: var(--surface-muted);
+    border: 1px solid var(--border-subtle);
+    color: var(--text-1);
+    font-size: 14px;
+    font-family: inherit;
+}
+
+.select {
+    padding-left: 14px;
+    appearance: none;
+}
+
+.input::placeholder {
+    color: var(--text-4);
+}
+
+.availableRow {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-top: 16px;
+    border-top: 1px solid rgba(185, 134, 42, 0.08);
+    border-left: none;
+    border-right: none;
+    border-bottom: none;
+    background: transparent;
+    color: inherit;
+    text-align: left;
+    cursor: pointer;
+}
+
+.availableTitle {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-2);
+}
+
+.availableMeta {
+    margin-top: 2px;
+    font-size: 11px;
+    color: var(--text-4);
+}
+
+.toggle {
+    width: 44px;
+    height: 24px;
+    border-radius: 12px;
+    background: var(--border-strong);
+    position: relative;
+    flex-shrink: 0;
+}
+
+.toggleActive {
+    background: var(--primary);
+    box-shadow: 0 0 16px var(--primary-border);
+}
+
+.toggleThumb {
+    position: absolute;
+    top: 3px;
+    left: 3px;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: #fff;
+    transition: left 0.25s ease;
+}
+
+.toggleThumbActive {
+    left: 23px;
+}
+
+.countCard {
+    display: flex;
+    align-items: baseline;
+    gap: 6px;
+    padding: 14px 16px;
+}
+
+.countValue {
+    font-size: 22px;
+    font-weight: 800;
+    color: var(--text-1);
+    line-height: 1;
+}
+
+.countLabel {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-4);
+}
+
+.activeFilters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.filterChip {
+    padding: 5px 10px;
+    border-radius: 999px;
+    background: var(--surface-highlight);
+    border: 1px solid var(--primary-border);
+    color: var(--primary);
+    font-size: 11px;
+    font-weight: 700;
+}
+
+.resultsColumn {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.resultsScroll {
+    flex: 1;
+    overflow-y: auto;
+    padding-right: 12px;
+    margin-right: -12px;
+}
+
+.resultsScroll::-webkit-scrollbar {
+    width: 6px;
+}
+
+.resultsScroll::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.resultsScroll::-webkit-scrollbar-thumb {
+    background: var(--border-subtle);
+    border-radius: 10px;
+}
+
+.resultsScroll::-webkit-scrollbar-thumb:hover {
+    background: var(--text-4);
+}
+
+.resultsHeader {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 24px;
+}
+
+.resultsTitle {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--text-1);
+}
+
+.realtimePill {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 6px 14px;
+    border-radius: 999px;
+    background: var(--surface-highlight);
+    border: 1px solid var(--primary-border);
+    color: var(--primary);
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+}
+
+.realtimeDot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--primary);
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 20px;
+}
+
+.emptyState {
+    padding: 80px 24px;
+    text-align: center;
+    color: var(--text-4);
+    border-radius: 16px;
+    border: 1px dashed var(--border-default);
+    background: var(--surface-muted);
+}
+
+@media (max-width: 1200px) {
+    .layout {
+        gap: 24px;
+    }
+}
+
+@media (max-width: 900px) {
+    .main {
+        margin-left: 0;
+        padding: 20px 16px;
+    }
+
+    .layout {
+        flex-direction: column;
+        gap: 24px;
+    }
+
+    .filterRail {
+        width: 100%;
+    }
+
+    .resultsHeader {
+        flex-wrap: wrap;
+        gap: 12px;
+    }
+}

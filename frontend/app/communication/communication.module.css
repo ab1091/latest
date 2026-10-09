@@ -1,0 +1,105 @@
+.page {
+    min-height: 100vh;
+    background: var(--bg-surface);
+    color: var(--text-2);
+}
+
+.main {
+    margin-left: 220px;
+    padding: 32px 36px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    height: 100vh;
+    box-sizing: border-box;
+}
+
+.header {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    flex-shrink: 0;
+}
+
+.title {
+    font-family: var(--font-display);
+    font-size: 22px;
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    color: var(--text-1);
+}
+
+.subtitle {
+    font-size: 13px;
+    color: var(--text-4);
+}
+
+.tabRail {
+    display: flex;
+    gap: 4px;
+    border-bottom: 1px solid var(--border-subtle);
+    flex-shrink: 0;
+}
+
+.tab {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    padding: 10px 16px;
+    border: none;
+    background: transparent;
+    color: var(--text-3);
+    font-size: 13.5px;
+    font-weight: 600;
+    font-family: inherit;
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -1px;
+    transition: all 0.12s ease;
+}
+
+.tab:hover {
+    color: var(--text-1);
+}
+
+.tabActive {
+    color: var(--primary);
+    border-bottom-color: var(--primary);
+}
+
+.tabBadge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1px 7px;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 700;
+    background: rgba(255, 255, 255, 0.08);
+    color: var(--text-3);
+    margin-left: 2px;
+}
+
+.tabActive .tabBadge {
+    background: var(--primary-subtle);
+    color: var(--primary);
+}
+
+.tabBody {
+    flex: 1;
+    min-height: 0;
+    overflow: auto;
+    border-radius: 12px;
+}
+
+@media (max-width: 900px) {
+    .main {
+        margin-left: 0;
+        padding: 20px 16px;
+        height: auto;
+    }
+
+    .tabBody {
+        overflow: visible;
+    }
+}

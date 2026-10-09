@@ -1,0 +1,115 @@
+name: Smoke Test (real APIs)
+
+# Manual trigger ONLY — this hits real Vapi/Twilio/Sendblue/Gemini/Groq/Google
+# APIs using real credentials stored as GitHub Secrets. Never runs
+# automatically, so a normal `git push` never spends money or places a real
+# call/SMS. Run this deliberately before a deploy, or whenever you want to
+# confirm every integration is actually alive right now.
+on:
+  workflow_dispatch: {}
+
+jobs:
+  smoke-test:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: pgvector/pgvector:pg15
+        env:
+          POSTGRES_USER: aicrm_app
+          POSTGRES_PASSWORD: ci_test_password
+          POSTGRES_DB: aicrm
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd pg_isready --health-interval 5s --health-timeout 5s --health-retries 10
+      redis:
+        image: redis:7-alpine
+        ports: ["6379:6379"]
+        options: >-
+          --health-cmd "redis-cli ping" --health-interval 5s --health-timeout 5s --health-retries 10
+
+    env:
+      DATABASE_URL: postgresql://aicrm_app:ci_test_password@localhost:5432/aicrm
+      REDIS_URL: redis://localhost:6379/0
+      DEFAULT_BUSINESS_ID: bus_001
+      JWT_SECRET: ci-only-secret-not-used-anywhere-real
+      # Everything below is a GitHub Secret — see the README note at the
+      # bottom of this file for how to add them.
+      GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+      GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+      GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
+      GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
+      GOOGLE_CALENDAR_REFRESH_TOKEN: ${{ secrets.GOOGLE_CALENDAR_REFRESH_TOKEN }}
+      VAPI_API_KEY: ${{ secrets.VAPI_API_KEY }}
+      VAPI_ASSISTANT_ID: ${{ secrets.VAPI_ASSISTANT_ID }}
+      VAPI_PHONE_NUMBER_ID: ${{ secrets.VAPI_PHONE_NUMBER_ID }}
+      TWILIO_ACCOUNT_SID: ${{ secrets.TWILIO_ACCOUNT_SID }}
+      TWILIO_AUTH_TOKEN: ${{ secrets.TWILIO_AUTH_TOKEN }}
+      SENDBLUE_API_KEY: ${{ secrets.SENDBLUE_API_KEY }}
+      SENDBLUE_API_SECRET: ${{ secrets.SENDBLUE_API_SECRET }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install ai-service deps
+        working-directory: ai-service
+        run: pip install -r requirements.txt
+
+      - name: Install crm-service deps
+        working-directory: crm-service
+        run: pip install -r requirements.txt
+
+      - name: Apply schema + migrations
+        run: |
+          PGPASSWORD=ci_test_password psql -h localhost -U aicrm_app -d aicrm \
+            -c "CREATE EXTENSION IF NOT EXISTS vector;"
+          PGPASSWORD=ci_test_password psql -h localhost -U aicrm_app -d aicrm \
+            -f database/schema.pg.sql
+          for f in database/migrations/*.sql; do
+            PGPASSWORD=ci_test_password psql -h localhost -U aicrm_app -d aicrm -f "$f"
+          done
+
+      - name: Seed a test business + admin login
+        run: |
+          HASH=$(python3 -c "import bcrypt; print(bcrypt.hashpw(b'Test1234!', bcrypt.gensalt()).decode())")
+          PGPASSWORD=ci_test_password psql -h localhost -U aicrm_app -d aicrm -c "
+            INSERT INTO businesses (id, name, email) VALUES ('bus_001', 'CI Test Business', 'ci-test@allzonetech.local')
+            ON CONFLICT (id) DO NOTHING;
+            INSERT INTO users (id, business_id, email, password_hash, first_name, last_name, role)
+            VALUES ('usr_admin', 'bus_001', 'admin@aischeduler.com', '$HASH', 'Admin', 'User', 'admin')
+            ON CONFLICT (id) DO UPDATE SET password_hash = EXCLUDED.password_hash;
+          "
+
+      - name: Start ai-service in background
+        working-directory: ai-service
+        run: |
+          DEBUG=true nohup python3 main.py > ai-service.log 2>&1 &
+          for i in $(seq 1 30); do curl -sf http://localhost:8000/health && break; sleep 1; done
+
+      - name: Start crm-service in background
+        working-directory: crm-service
+        run: |
+          DEBUG=true nohup python3 main.py > crm-service.log 2>&1 &
+          for i in $(seq 1 30); do curl -sf http://localhost:8001/health && break; sleep 1; done
+
+      - name: Run smoke test
+        run: python3 scripts/smoke_test.py
+
+      - name: Upload service logs on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: service-logs
+          path: |
+            ai-service/ai-service.log
+            crm-service/crm-service.log
+
+# ── How to add the secrets this workflow needs ──────────────────────────────
+# GitHub repo → Settings → Secrets and variables → Actions → New repository
+# secret. Add one secret per name listed under `env:` above (GEMINI_API_KEY,
+# VAPI_API_KEY, etc.) — copy the real values from your local .env files.
+# Secrets are encrypted at rest and never shown in logs, even if a step
+# accidentally prints them.

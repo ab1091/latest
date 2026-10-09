@@ -1,0 +1,543 @@
+.page {
+    display: flex;
+    min-height: 100vh;
+    background: transparent;
+    color: var(--text-1);
+    font-family: var(--font-inter);
+}
+
+.main {
+    flex: 1;
+    margin-left: 220px;
+    padding: 2rem 2.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+/* Header */
+.header {
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+}
+.headerIcon {
+    width: 46px; height: 46px;
+    border-radius: 13px;
+    background: linear-gradient(135deg, rgba(185, 134, 42,0.18) 0%, rgba(185, 134, 42,0.06) 100%);
+    border: 1px solid rgba(185, 134, 42,0.28);
+    box-shadow: 0 4px 16px rgba(185, 134, 42,0.12);
+    display: flex; align-items: center; justify-content: center;
+    color: var(--primary);
+}
+.headerInfo { flex: 1; }
+.headerInfo h1 {
+    font-family: var(--font-outfit);
+    font-size: 1.5rem; font-weight: 800;
+    color: var(--text-1); margin: 0 0 0.15rem;
+    letter-spacing: -0.02em;
+}
+.headerInfo p { font-size: 0.85rem; color: var(--text-4); margin: 0; }
+.headerActions { display: flex; gap: 0.75rem; }
+
+/* Buttons */
+.btnPrimary {
+    display: flex; align-items: center; gap: 0.45rem;
+    padding: 0.6rem 1.2rem;
+    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-hover) 100%);
+    color: #fff;
+    border: none; border-radius: 10px;
+    font-size: 0.85rem; font-weight: 700; cursor: pointer;
+    box-shadow: 0 4px 14px rgba(185, 134, 42,0.3);
+    transition: all 0.18s;
+}
+.btnPrimary:hover { transform: translateY(-1px); box-shadow: 0 6px 18px rgba(185, 134, 42,0.4); }
+.btnPrimary:disabled { opacity: 0.5; cursor: not-allowed; transform: none; box-shadow: none; }
+
+.btnBulk {
+    display: flex; align-items: center; gap: 0.45rem;
+    padding: 0.6rem 1.2rem;
+    background: rgba(99,102,241,0.1);
+    border: 1px solid rgba(99,102,241,0.28);
+    border-radius: 10px; color: #818cf8;
+    font-size: 0.85rem; font-weight: 700; cursor: pointer;
+    transition: all 0.18s;
+}
+.btnBulk:hover { background: rgba(99,102,241,0.18); border-color: rgba(99,102,241,0.45); transform: translateY(-1px); }
+.btnBulk:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+.btnDanger {
+    display: flex; align-items: center; gap: 0.45rem;
+    padding: 0.6rem 1.2rem;
+    background: rgba(239,68,68,0.08);
+    border: 1px solid rgba(239,68,68,0.25);
+    border-radius: 10px; color: #f87171;
+    font-size: 0.85rem; font-weight: 700; cursor: pointer;
+    transition: all 0.18s;
+}
+.btnDanger:hover { background: rgba(239,68,68,0.15); border-color: rgba(239,68,68,0.4); }
+
+.btnSecondary {
+    display: flex; align-items: center; gap: 0.45rem;
+    padding: 0.6rem 1.2rem;
+    background: var(--bg-card);
+    border: 1px solid var(--border-default);
+    border-radius: 10px; color: var(--text-2);
+    font-size: 0.85rem; font-weight: 600; cursor: pointer;
+    transition: all 0.18s;
+}
+.btnSecondary:hover { border-color: var(--primary); color: var(--primary); transform: translateY(-1px); }
+
+/* Filters */
+.filtersRow {
+    display: flex; gap: 0.75rem; align-items: center;
+}
+.searchBox {
+    display: flex; align-items: center; gap: 0.6rem;
+    padding: 0.6rem 1rem;
+    background: var(--bg-card);
+    border: 1px solid var(--border-default);
+    border-radius: 10px; flex: 1; max-width: 360px;
+    color: var(--text-4);
+    transition: border-color 0.15s;
+}
+.searchBox:focus-within { border-color: var(--primary-border); }
+.searchInput {
+    background: transparent; border: none;
+    color: var(--text-1); font-size: 0.875rem;
+    width: 100%; outline: none;
+}
+.searchInput::placeholder { color: var(--text-4); }
+
+.filterSelect {
+    padding: 0.6rem 0.9rem;
+    background: var(--bg-card);
+    border: 1px solid var(--border-default);
+    border-radius: 10px; color: var(--text-2);
+    font-size: 0.85rem; cursor: pointer; outline: none;
+    transition: border-color 0.15s;
+}
+.filterSelect:focus { border-color: var(--primary-border); }
+
+.refreshBtn {
+    padding: 0.6rem;
+    background: var(--bg-card);
+    border: 1px solid var(--border-default);
+    border-radius: 10px; color: var(--text-4);
+    cursor: pointer; display: flex; align-items: center;
+    transition: all 0.18s;
+}
+.refreshBtn:hover { color: var(--primary); border-color: var(--primary-border); transform: translateY(-1px); }
+.spin { animation: rotate 1.2s linear infinite; }
+@keyframes rotate { to { transform: rotate(360deg); } }
+
+/* Table */
+.tableWrap {
+    background: var(--bg-card);
+    border: 1px solid var(--border-default);
+    border-radius: 16px; overflow: hidden; flex: 1;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.08), inset 0 1px 0 rgba(255,255,255,0.03);
+}
+.table {
+    width: 100%; border-collapse: collapse; font-size: 0.875rem;
+}
+.table input[type="checkbox"] {
+    width: 16px; height: 16px; accent-color: #b9862a;
+    cursor: pointer; border-radius: 4px;
+}
+.table th {
+    padding: 0.85rem 1.25rem;
+    text-align: left; color: var(--text-4);
+    font-size: 0.7rem; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.06em;
+    border-bottom: 1px solid var(--border-default);
+    background: rgba(255,255,255,0.015);
+}
+.row { border-bottom: 1px solid var(--border-subtle); transition: background 0.12s; }
+.row:last-child { border-bottom: none; }
+.row:hover { background: rgba(185, 134, 42,0.04); }
+.row td { padding: 0.9rem 1.25rem; vertical-align: middle; }
+.rowSelected { background: rgba(99,102,241,0.06) !important; }
+
+.empty { text-align: center; padding: 3rem; color: var(--text-4); font-size: 0.9rem; }
+
+/* Lead cell */
+.leadCell { display: flex; align-items: center; gap: 0.75rem; }
+.avatar {
+    width: 36px; height: 36px; border-radius: 10px;
+    background: linear-gradient(135deg, rgba(185, 134, 42,0.18) 0%, rgba(185, 134, 42,0.06) 100%);
+    color: var(--primary);
+    border: 1px solid rgba(185, 134, 42,0.2);
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 700; font-size: 0.85rem; flex-shrink: 0;
+}
+.leadName { font-weight: 600; color: var(--text-1); font-size: 0.9rem; }
+.leadEmail { font-size: 0.75rem; color: var(--text-4); margin-top: 0.1rem; }
+
+/* Status badges */
+.statusBadge {
+    display: inline-flex; padding: 0.28rem 0.7rem;
+    border-radius: 20px; font-size: 0.7rem; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.05em;
+}
+.statusNew       { background: rgba(99,102,241,0.14);  color: #a5b4fc; border: 1px solid rgba(99,102,241,0.25); }
+.statusOld       { background: rgba(249,115,22,0.14);  color: #fb923c; border: 1px solid rgba(249,115,22,0.25); }
+.statusContacted { background: rgba(56,189,248,0.14);  color: #38bdf8; border: 1px solid rgba(56,189,248,0.25); }
+.statusQualified { background: rgba(16,185,129,0.14);  color: #34d399; border: 1px solid rgba(16,185,129,0.25); }
+.statusConverted { background: rgba(185, 134, 42,0.14);  color: #e8c877; border: 1px solid rgba(185, 134, 42,0.28); }
+.statusDead      { background: rgba(107,114,128,0.1);  color: #9ca3af; border: 1px solid rgba(107,114,128,0.2); }
+
+.strategyCell { font-size: 0.85rem; color: var(--text-3); }
+.phoneCell    { font-size: 0.85rem; color: var(--text-2); font-variant-numeric: tabular-nums; }
+
+/* Tags */
+.tagsList { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+.tag {
+    padding: 0.2rem 0.55rem;
+    background: rgba(185, 134, 42,0.1);
+    border: 1px solid rgba(185, 134, 42,0.2);
+    border-radius: 20px; font-size: 0.7rem;
+    font-weight: 600; color: var(--primary);
+}
+.noTags { color: var(--text-4); font-size: 0.85rem; }
+
+/* Actions */
+.actions { display: flex; align-items: center; gap: 0.4rem; flex-wrap: wrap; min-width: 220px; }
+.smsBtn {
+    display: flex; align-items: center; gap: 0.4rem;
+    padding: 0.4rem 0.75rem;
+    background: rgba(99,102,241,0.12);
+    border: 1px solid rgba(99,102,241,0.28);
+    border-radius: 8px; color: #a5b4fc;
+    font-size: 0.78rem; font-weight: 700; cursor: pointer;
+    transition: all 0.15s;
+    letter-spacing: 0.02em;
+}
+.smsBtn:hover { background: rgba(99,102,241,0.22); border-color: rgba(99,102,241,0.5); }
+
+.chatBtn {
+    display: flex; align-items: center; gap: 0.4rem;
+    padding: 0.4rem 0.75rem;
+    background: rgba(185, 134, 42,0.12);
+    border: 1px solid rgba(185, 134, 42,0.28);
+    border-radius: 8px; color: #e8c877;
+    font-size: 0.78rem; font-weight: 700; cursor: pointer;
+    transition: all 0.15s;
+    letter-spacing: 0.02em;
+}
+.chatBtn:hover { background: rgba(185, 134, 42,0.22); border-color: rgba(185, 134, 42,0.5); }
+.deleteBtn {
+    padding: 0.4rem;
+    background: transparent; border: 1px solid var(--border-subtle);
+    border-radius: 8px; color: var(--text-4); cursor: pointer;
+    display: flex; align-items: center;
+    transition: all 0.15s;
+}
+.deleteBtn:hover { border-color: #ef4444; color: #ef4444; background: rgba(239,68,68,0.05); }
+
+/* Modals */
+.modalOverlay {
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,0.6); backdrop-filter: blur(6px);
+    display: flex; align-items: center; justify-content: center;
+    z-index: 1000;
+}
+.modal {
+    background: var(--bg-card);
+    border: 1px solid var(--border-default);
+    border-radius: 18px; width: 680px; max-width: 95vw;
+    max-height: 90vh; overflow-y: auto;
+    box-shadow: 0 32px 80px rgba(0,0,0,0.45);
+}
+.modalHeader {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 1.5rem 1.75rem;
+    border-bottom: 1px solid var(--border-subtle);
+}
+.modalHeader h2 {
+    font-family: var(--font-outfit); font-size: 1.15rem;
+    font-weight: 700; color: var(--text-1); margin: 0;
+    letter-spacing: -0.02em;
+}
+.closeBtn {
+    background: none; border: none; color: var(--text-4);
+    cursor: pointer; padding: 0.3rem; border-radius: 8px;
+    display: flex; align-items: center; transition: all 0.15s;
+}
+.closeBtn:hover { color: var(--text-1); background: var(--surface-muted); }
+
+.modalBody { padding: 1.5rem 1.75rem; }
+
+/* CSV import */
+.csvNote {
+    background: linear-gradient(135deg, rgba(185, 134, 42,0.07) 0%, rgba(185, 134, 42,0.03) 100%);
+    border: 1px solid rgba(185, 134, 42,0.18);
+    border-radius: 10px; padding: 1rem 1.25rem;
+    margin-bottom: 1.25rem;
+}
+.csvNote p { font-size: 0.85rem; color: var(--text-3); margin: 0 0 0.3rem; }
+.csvNote p:last-child { margin: 0; }
+
+.fileLabel {
+    display: flex; flex-direction: column; align-items: center;
+    gap: 0.6rem; padding: 2rem;
+    border: 2px dashed var(--border-default);
+    border-radius: 12px; cursor: pointer; color: var(--text-4);
+    font-size: 0.9rem; font-weight: 600;
+    transition: all 0.18s;
+}
+.fileLabel:hover { border-color: var(--primary); color: var(--primary); background: rgba(185, 134, 42,0.04); }
+
+.importResult { margin-top: 1rem; }
+.importSuccess {
+    display: flex; align-items: center; gap: 0.5rem;
+    color: var(--primary); font-weight: 600; font-size: 0.9rem;
+}
+.importError { color: #f87171; font-size: 0.9rem; }
+.importErrors { color: #fbbf24; font-size: 0.8rem; margin-top: 0.5rem; padding-left: 1.25rem; }
+
+/* Add lead form */
+.formGrid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+.formGroup { display: flex; flex-direction: column; gap: 0.4rem; }
+.formGroupFull { grid-column: 1 / -1; display: flex; flex-direction: column; gap: 0.4rem; }
+.formGroup label, .formGroupFull label {
+    font-size: 0.75rem; font-weight: 700;
+    color: var(--text-4); text-transform: uppercase; letter-spacing: 0.05em;
+}
+.input, .textarea {
+    padding: 0.65rem 0.9rem;
+    background: var(--bg-elevated);
+    border: 1px solid var(--border-default);
+    border-radius: 8px; color: var(--text-1);
+    font-size: 0.875rem; outline: none;
+    font-family: var(--font-inter);
+    transition: border-color 0.15s, box-shadow 0.15s;
+}
+.input:focus, .textarea:focus {
+    border-color: var(--primary-border);
+    box-shadow: 0 0 0 3px rgba(185, 134, 42,0.1);
+}
+.textarea { resize: vertical; }
+
+.modalFooter {
+    display: flex; justify-content: flex-end; gap: 0.75rem;
+    margin-top: 1.5rem; padding-top: 1.25rem;
+    border-top: 1px solid var(--border-subtle);
+}
+
+/* ── Toolbar ── */
+.toolbar {
+    display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+}
+
+.viewToggle {
+    display: flex;
+    background: var(--bg-card);
+    border: 1px solid var(--border-default);
+    border-radius: 10px;
+    padding: 3px; gap: 2px; flex-shrink: 0;
+}
+.viewBtn {
+    display: flex; align-items: center; gap: 6px;
+    padding: 6px 14px; border-radius: 8px;
+    border: none; cursor: pointer;
+    background: transparent; color: var(--text-4);
+    font-size: 13px; font-weight: 600; transition: all 0.15s;
+}
+.viewBtnActive {
+    display: flex; align-items: center; gap: 6px;
+    padding: 6px 14px; border-radius: 8px;
+    border: none; cursor: pointer;
+    background: var(--primary); color: var(--on-primary);
+    font-size: 13px; font-weight: 600; transition: all 0.15s;
+}
+.clearSearch {
+    background: none; border: none; cursor: pointer;
+    color: var(--text-4); display: flex; align-items: center;
+    padding: 0;
+}
+.clearSearch:hover { color: var(--text-1); }
+
+/* ── Bulk bar ── */
+.bulkBar {
+    display: flex; align-items: center; gap: 10px;
+    padding: 8px 12px;
+    background: rgba(239,68,68,0.07);
+    border: 1px solid rgba(239,68,68,0.2);
+    border-radius: 8px;
+    font-size: 13px; color: var(--text-2);
+}
+.bulkBar span { flex: 1; }
+
+/* ── Kanban board ── */
+.kanbanBoard {
+    display: grid;
+    /* Column count is set inline (repeat(PIPELINE_COLUMNS.length, 1fr)) so
+       every stage always fits in one row across the full screen width —
+       no vertical wrapping, no horizontal scrolling. */
+    gap: 10px;
+    align-items: start;
+}
+
+.kanbanCol {
+    background: var(--bg-card);
+    border: 1px solid var(--border-default);
+    border-top: 3px solid var(--border-default);
+    border-radius: 16px;
+    min-height: 480px;
+    /* A column with many leads (a large CSV import especially) used to grow
+       to fit every card with no cap, stretching the whole page to an
+       enormous scroll height and shoving every other column far below the
+       fold. Capping the column's height and letting only its own card list
+       scroll internally keeps every column (and the header row above them)
+       visible together, the way a normal Kanban board behaves. */
+    max-height: calc(100vh - 260px);
+    display: flex;
+    flex-direction: column;
+    transition: all 0.15s;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.07), 0 1px 3px rgba(0,0,0,0.05);
+    overflow: hidden;
+}
+
+.colHeader {
+    padding: 16px 16px 14px;
+    border-bottom: 1px solid var(--border-default);
+    display: flex; align-items: center; justify-content: space-between;
+    flex-shrink: 0;
+}
+.colDot {
+    width: 9px; height: 9px; border-radius: 50%;
+}
+.colTitle {
+    font-weight: 700; font-size: 14px; color: var(--text-1); letter-spacing: -0.01em;
+}
+.colCount {
+    padding: 3px 10px; border-radius: 20px;
+    font-size: 12px; font-weight: 700;
+}
+
+.cardList {
+    padding: 10px; display: flex; flex-direction: column; gap: 7px;
+    overflow-y: auto;
+    flex: 1;
+    min-height: 0;
+}
+
+.emptyCol {
+    text-align: center; padding: 36px 16px;
+    font-size: 12.5px; font-weight: 600;
+    border: 1.5px dashed;
+    border-radius: 12px; margin-top: 4px;
+    display: flex; flex-direction: column; align-items: center; gap: 8px;
+}
+
+/* ── Kanban card ── */
+.card {
+    background: var(--bg-elevated);
+    border: 1px solid var(--border-subtle);
+    border-radius: 10px; padding: 9px 10px;
+    cursor: grab; transition: all 0.15s;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+}
+.card:hover {
+    box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+    transform: translateY(-2px);
+    border-color: var(--border-strong);
+}
+.card:active { cursor: grabbing; }
+
+.cardTop {
+    display: flex; align-items: center; gap: 8px; margin-bottom: 6px;
+}
+.cardAvatarWrap {
+    position: relative; flex-shrink: 0;
+}
+.cardAvatar {
+    width: 28px; height: 28px; border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 700; font-size: 11px;
+    border: 1px solid transparent;
+}
+/* Small numbered badge overlapping the avatar's corner — a running count
+   of the card's position, useful for scanning a large import at a glance
+   without competing for space in the already-tight name/actions row. */
+.cardNum {
+    position: absolute; top: -5px; left: -5px;
+    min-width: 15px; height: 15px; padding: 0 3px;
+    border-radius: 999px;
+    background: var(--bg-card);
+    border: 1px solid var(--border-default);
+    color: var(--text-3);
+    font-size: 9px; font-weight: 700;
+    display: flex; align-items: center; justify-content: center;
+    line-height: 1;
+}
+.cardInfo {
+    /* min-width:0 lets this flex item shrink below its text's natural
+       width — without it, a long name or phone number pushes past the
+       card's edge instead of truncating. */
+    flex: 1; min-width: 0;
+}
+.cardName {
+    font-weight: 700; font-size: 12.5px; color: var(--text-1);
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.cardPhone {
+    font-size: 11px; color: var(--text-4); margin-top: 1px;
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.cardTags {
+    display: flex; flex-wrap: wrap; gap: 4px; margin-bottom: 6px;
+}
+.cardTag {
+    font-size: 9.5px; padding: 1px 6px; border-radius: 20px;
+    background: rgba(107,114,128,0.1); color: var(--text-3); font-weight: 600;
+}
+.cardTagMore {
+    font-size: 10px; color: var(--text-4);
+}
+.cardDate {
+    display: flex; align-items: center; gap: 5px;
+    font-size: 11px; color: var(--text-4);
+    margin-bottom: 6px;
+}
+.cardActions {
+    display: flex; gap: 4px; flex-shrink: 0;
+}
+.cardBtn {
+    flex: 1; padding: 4px 0; border-radius: 6px;
+    border: none; cursor: pointer;
+    font-size: 10.5px; font-weight: 600;
+    display: flex; align-items: center; justify-content: center; gap: 4px;
+    transition: opacity 0.15s;
+}
+.cardBtn:hover { opacity: 0.8; }
+
+/* Small square icon-only button — Chat/Edit sit inline next to the name
+   instead of a full-width row below, so the card stays compact. */
+.cardIconBtn {
+    width: 24px; height: 24px; border-radius: 6px;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: opacity 0.15s;
+    flex-shrink: 0;
+}
+.cardIconBtn:hover { opacity: 0.8; }
+
+/* ── Toggle rows (import / add lead) ── */
+.toggleRow {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 10px 14px; border-radius: 10px; margin-bottom: 14px;
+    border: 1px solid; cursor: pointer; transition: all 0.15s;
+}
+.toggleLabel { font-weight: 600; font-size: 13px; color: var(--text-1); }
+.toggleDesc  { font-size: 11px; color: var(--text-4); margin-top: 2px; }
+.toggle {
+    width: 40px; height: 22px; border-radius: 11px;
+    position: relative; flex-shrink: 0; transition: background 0.2s;
+}
+.toggleThumb {
+    position: absolute; top: 3px;
+    width: 16px; height: 16px; border-radius: 50%;
+    background: #fff; transition: left 0.2s;
+}

@@ -1,0 +1,393 @@
+:root {
+  color-scheme: light dark;
+
+  /* AllZone — Navy + Gold (enterprise) */
+  --bg-root: #050810;
+  --bg-app: #070d1a;
+  --bg-surface: #0c1424;
+  --bg-raised: #121b30;
+  --bg-overlay: rgba(5, 8, 16, 0.84);
+  --sidebar-bg: #050810;
+  --sidebar-border: rgba(212, 169, 79, 0.08);
+
+  --primary: #d4a94f;
+  --primary-hover: #c99a3a;
+  --primary-active: #b98a2e;
+  --primary-subtle: rgba(212, 169, 79, 0.12);
+  --primary-border: rgba(212, 169, 79, 0.28);
+  --primary-soft: rgba(212, 169, 79, 0.18);
+  --primary-text: #e8c877;
+  --on-primary: #14100a;
+
+  --accent-2: #3b82f6;
+  --accent-2-text: #7fb0fb;
+  --accent-2-subtle: rgba(59, 130, 246, 0.12);
+  --accent-2-border: rgba(59, 130, 246, 0.28);
+
+  --text-1: #f5f3ee;
+  --text-2: #cdd3de;
+  --text-3: #8b93a6;
+  --text-4: #5c6478;
+
+  --border-subtle: rgba(148, 163, 184, 0.08);
+  --border-default: rgba(148, 163, 184, 0.14);
+  --border-strong: rgba(148, 163, 184, 0.24);
+
+  --status-success: #34d399;
+  --status-success-bg: rgba(52, 211, 153, 0.12);
+  --status-danger: #f87171;
+  --status-danger-bg: rgba(248, 113, 113, 0.12);
+  --status-warning: #fbbf24;
+  --status-warning-bg: rgba(251, 191, 36, 0.12);
+  --status-info: #60a5fa;
+  --status-info-bg: rgba(96, 165, 250, 0.12);
+
+  --surface-panel: var(--bg-surface);
+  --surface-muted: rgba(245, 243, 238, 0.03);
+  --surface-highlight: rgba(212, 169, 79, 0.08);
+  --surface-inset: rgba(0, 0, 0, 0.28);
+
+  --shadow-soft: 0 18px 48px rgba(0, 0, 0, 0.35);
+  --shadow-panel: 0 24px 60px rgba(0, 0, 0, 0.4);
+  --shadow-accent: 0 12px 30px rgba(212, 169, 79, 0.2);
+  --glow-accent: 0 0 0 1px rgba(212, 169, 79, 0.14), 0 0 32px rgba(212, 169, 79, 0.14);
+
+  --r-xs: 6px;
+  --r-sm: 8px;
+  --r-md: 10px;
+  --r-lg: 12px;
+  --r-xl: 14px;
+  --r-2xl: 18px;
+  --r-pill: 999px;
+
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-10: 40px;
+  --space-12: 48px;
+
+  --font-display: 'Outfit', system-ui, sans-serif;
+  --font-sans: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+
+  --transition-fast: 140ms ease;
+  --transition-base: 220ms cubic-bezier(0.2, 0.8, 0.2, 1);
+
+  /* Backwards-compatible aliases for existing modules/components */
+  --bg-card: var(--bg-surface);
+  --bg-elevated: var(--bg-raised);
+  --bg-main: var(--bg-app);
+  --font-inter: var(--font-sans);
+  --font-outfit: var(--font-display);
+  --color-bg-base: var(--bg-root);
+  --color-bg-surface: var(--bg-surface);
+  --color-bg-elevated: var(--bg-raised);
+  --color-primary: var(--primary);
+  --color-primary-dark: var(--primary-active);
+  --color-secondary: var(--primary-hover);
+  --color-accent: var(--primary-text);
+  --color-success: var(--status-success);
+  --color-warning: var(--status-warning);
+  --color-danger: var(--status-danger);
+  --color-text: var(--text-1);
+  --color-text-muted: var(--text-3);
+  --color-text-dim: var(--text-4);
+  --color-border: var(--border-default);
+  --color-border-hover: var(--primary-border);
+  --color-background: var(--bg-root);
+  --color-surface: var(--bg-surface);
+  --color-nebula-violet: var(--primary);
+  --color-nebula-magenta: var(--primary-hover);
+  --color-nebula-blue: var(--primary-text);
+  --color-polaris: var(--text-1);
+  --color-polaris-dim: var(--text-2);
+  --glass-bg: rgba(12, 20, 36, 0.82);
+  --glass-border: var(--border-default);
+  --glass-shadow: var(--shadow-panel);
+}
+
+[data-theme='light'] {
+  color-scheme: light;
+  --bg-root: #f7f8fa;
+  --bg-app: #eef1f6;
+  --bg-surface: #ffffff;
+  --bg-raised: #ffffff;
+  --bg-overlay: rgba(247, 248, 250, 0.82);
+  --sidebar-bg: #ffffff;
+  --sidebar-border: rgba(11, 18, 32, 0.05);
+  --primary: #b9862a;
+  --primary-hover: #a67722;
+  --primary-active: #8f651c;
+  --primary-subtle: rgba(185, 134, 42, 0.12);
+  --primary-border: rgba(185, 134, 42, 0.28);
+  --primary-soft: rgba(185, 134, 42, 0.18);
+  --primary-text: #9a7020;
+  --accent-2: #2563eb;
+  --accent-2-text: #1d4ed8;
+  --accent-2-subtle: rgba(37, 99, 235, 0.1);
+  --accent-2-border: rgba(37, 99, 235, 0.24);
+  --text-1: #0b1220;
+  --text-2: #2a3648;
+  --text-3: #55617a;
+  --text-4: #808ba3;
+  --border-subtle: rgba(11, 18, 32, 0.04);
+  --border-default: rgba(11, 18, 32, 0.08);
+  --border-strong: rgba(11, 18, 32, 0.16);
+  --surface-panel: #ffffff;
+  --surface-muted: #f2f4f8;
+  --surface-highlight: rgba(185, 134, 42, 0.06);
+  --surface-inset: #eef1f6;
+  --shadow-soft: 0 8px 32px rgba(11, 18, 32, 0.04);
+  --shadow-panel: 0 12px 48px rgba(11, 18, 32, 0.06);
+  --glass-bg: rgba(255, 255, 255, 0.88);
+  --glass-border: rgba(11, 18, 32, 0.06);
+}
+
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme='dark']) {
+    color-scheme: light;
+    --bg-root: #f7f8fa;
+    --bg-app: #eef1f6;
+    --bg-surface: #ffffff;
+    --bg-raised: #f5f7fa;
+    --bg-overlay: rgba(247, 248, 250, 0.82);
+    --text-1: #0b1220;
+    --text-2: #2a3648;
+    --text-3: #55617a;
+    --text-4: #808ba3;
+    --border-subtle: rgba(11, 18, 32, 0.06);
+    --border-default: rgba(11, 18, 32, 0.12);
+    --border-strong: rgba(11, 18, 32, 0.18);
+    --primary: #b9862a;
+    --primary-hover: #a67722;
+    --primary-active: #8f651c;
+    --primary-subtle: rgba(185, 134, 42, 0.12);
+    --primary-border: rgba(185, 134, 42, 0.28);
+    --primary-soft: rgba(185, 134, 42, 0.18);
+    --surface-panel: var(--bg-surface);
+    --surface-muted: rgba(11, 18, 32, 0.03);
+    --surface-highlight: rgba(212, 169, 79, 0.1);
+    --surface-inset: rgba(11, 18, 32, 0.06);
+    --shadow-soft: 0 16px 40px rgba(11, 18, 32, 0.08);
+    --shadow-panel: 0 20px 48px rgba(11, 18, 32, 0.1);
+    --glass-bg: rgba(255, 255, 255, 0.82);
+    --glass-border: rgba(11, 18, 32, 0.08);
+  }
+}
+
+* {
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: var(--font-sans);
+  background:
+    radial-gradient(circle at top, rgba(212, 169, 79, 0.07), transparent 38%),
+    linear-gradient(180deg, var(--bg-root) 0%, var(--bg-app) 100%);
+  color: var(--text-1);
+  min-height: 100vh;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+body::selection {
+  background: var(--primary-subtle);
+  color: var(--text-1);
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: var(--font-display);
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: -0.03em;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+img,
+svg,
+canvas,
+video {
+  display: block;
+  max-width: 100%;
+}
+
+/* The `svg { max-width: 100% }` reset above collides with React Flow's
+   per-edge <svg> wrappers (used by the Automation workflow builder), each
+   sized to that edge's own path bounding box — a perfectly straight
+   vertical/horizontal connector has zero width in that box, and the reset
+   clips its stroke to invisible even though color/opacity are correct. */
+.react-flow__edges svg {
+    max-width: none !important;
+    width: auto !important;
+    overflow: visible !important;
+}
+
+.glass-panel {
+  background: var(--glass-bg);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--glass-shadow);
+  border-radius: var(--r-2xl);
+}
+
+.gradient-text {
+  color: var(--primary-text);
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  min-height: 44px;
+  padding: 0.75rem 1.15rem;
+  border-radius: var(--r-lg);
+  font-weight: 600;
+  transition:
+    transform var(--transition-fast),
+    background var(--transition-fast),
+    border-color var(--transition-fast),
+    color var(--transition-fast),
+    box-shadow var(--transition-fast);
+  cursor: pointer;
+  border: 1px solid transparent;
+}
+
+.btn:hover {
+  transform: translateY(-1px);
+}
+
+.btn:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 4px rgba(212, 169, 79, 0.18);
+}
+
+.btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.btn-primary {
+  background: var(--primary);
+  color: var(--on-primary);
+  box-shadow: var(--shadow-accent);
+}
+
+.btn-primary:hover {
+  background: var(--primary-hover);
+}
+
+.btn-secondary {
+  background: var(--surface-muted);
+  color: var(--text-1);
+  border-color: var(--border-default);
+}
+
+.btn-secondary:hover {
+  background: rgba(240, 250, 248, 0.06);
+  border-color: var(--border-strong);
+}
+
+.spinner {
+  animation: spin 1s linear infinite;
+}
+
+.animate-fade-in {
+  animation: fade-in 0.28s ease-out forwards;
+}
+
+.flex-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.max-width-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1.5rem;
+}
+
+.surface-card {
+  background: var(--surface-panel);
+  border: 1px solid var(--border-default);
+  border-radius: var(--r-xl);
+  box-shadow: inset 0 1px 0 rgba(240, 250, 248, 0.02);
+}
+
+.pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.28rem 0.7rem;
+  border-radius: var(--r-pill);
+  border: 1px solid var(--border-default);
+  background: var(--surface-highlight);
+  color: var(--primary-text);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg-root);
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(148, 163, 184, 0.18);
+  border-radius: 999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(148, 163, 184, 0.3);
+}

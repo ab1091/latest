@@ -1,0 +1,144 @@
+services:
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  # pgvector/pgvector — plain postgres:15-alpine doesn't have the `vector`
+  # extension the RAG knowledge base needs (kb_documents/kb_chunks).
+  db:
+    image: pgvector/pgvector:pg15
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-aicrm_app}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-aicrm_local_password}
+      POSTGRES_DB: ${POSTGRES_DB:-aicrm}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-aicrm_app}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  # One-shot: enables pgvector + applies schema + every migration, then
+  # exits. ai-service/crm-service wait for this to finish successfully
+  # before starting, so a fresh `docker compose up` always boots against a
+  # fully-migrated database.
+  migrate:
+    image: pgvector/pgvector:pg15
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      PGPASSWORD: ${POSTGRES_PASSWORD:-aicrm_local_password}
+      PGUSER: ${POSTGRES_USER:-aicrm_app}
+      PGDATABASE: ${POSTGRES_DB:-aicrm}
+      PGHOST: db
+    volumes:
+      - ./database:/database:ro
+    entrypoint: >
+      bash -c "
+        psql -c 'CREATE EXTENSION IF NOT EXISTS vector;' &&
+        psql -f /database/schema.pg.sql &&
+        for f in /database/migrations/*.sql; do
+          echo \"Applying $$f\";
+          psql -f \"$$f\";
+        done
+      "
+
+  # One-shot: bootstraps a default business + admin login on a fresh
+  # database, so `docker compose up` on a brand-new clone ends with a
+  # working login instead of an empty, unusable app. Idempotent — safe on
+  # every restart, does nothing once bus_001/admin already exist.
+  seed:
+    build:
+      context: ./crm-service
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+    environment:
+      - DATABASE_URL=postgresql://${POSTGRES_USER:-aicrm_app}:${POSTGRES_PASSWORD:-aicrm_local_password}@db:5432/${POSTGRES_DB:-aicrm}
+    entrypoint: ["python3", "scripts/seed_docker_admin.py"]
+
+  ai-service:
+    build:
+      context: ./ai-service
+    ports:
+      - "8000:8000"
+    env_file:
+      - ./ai-service/.env
+    environment:
+      - DATABASE_URL=postgresql://${POSTGRES_USER:-aicrm_app}:${POSTGRES_PASSWORD:-aicrm_local_password}@db:5432/${POSTGRES_DB:-aicrm}
+      - REDIS_URL=redis://redis:6379/0
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "python3", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+
+  crm-service:
+    build:
+      context: ./crm-service
+    ports:
+      - "8001:8001"
+    env_file:
+      - ./crm-service/.env
+    environment:
+      - DATABASE_URL=postgresql://${POSTGRES_USER:-aicrm_app}:${POSTGRES_PASSWORD:-aicrm_local_password}@db:5432/${POSTGRES_DB:-aicrm}
+      - VOICE_BOT_URL=http://ai-service:8000
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+    healthcheck:
+      test: ["CMD", "python3", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8001/health')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+
+  frontend:
+    build:
+      context: ./frontend
+      target: dev
+      args:
+        NEXT_PUBLIC_BACKEND_URL: http://localhost:8000
+        NEXT_PUBLIC_CRM_URL: http://localhost:8001
+    ports:
+      - "3001:3000"
+    environment:
+      - NEXT_PUBLIC_BACKEND_URL=http://localhost:8000
+      - NEXT_PUBLIC_CRM_URL=http://localhost:8001
+      - NEXT_PUBLIC_FRONTEND_URL=http://localhost:3001
+      # Set GOOGLE_CLIENT_ID in a root-level .env (next to this file) to
+      # enable Google login in the containerized frontend — falls back to
+      # empty (Google login button just won't work) if unset, so this never
+      # blocks the rest of the stack from starting.
+      - NEXT_PUBLIC_GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID:-}
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+      - /app/.next
+    depends_on:
+      ai-service:
+        condition: service_healthy
+      crm-service:
+        condition: service_healthy
+
+volumes:
+  postgres_data:
+  redis_data:

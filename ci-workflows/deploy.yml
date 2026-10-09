@@ -1,0 +1,77 @@
+name: Deploy to Azure (dev-live)
+
+# Push to dev-live -> build each service's image, push it to ACR tagged with
+# the commit SHA, then point that service's Azure sitecontainer at the new
+# tag and restart. Requires the aicrm-github-deploy service principal to have
+# been granted AcrPush (on aicrmacr) and Website Contributor (on aicrm-leads)
+# — see repo README/PR description for the one-time az role assignment
+# commands. Until that role grant exists, this workflow will fail at the
+# "Azure login" step with an authorization error, not silently no-op.
+on:
+  push:
+    branches: ["dev-live"]
+
+concurrency:
+  group: deploy-aicrm-leads
+  cancel-in-progress: false
+
+env:
+  RESOURCE_GROUP: AllZoneAIVoiceBot
+  WEBAPP_NAME: aicrm-leads
+  ACR_NAME: aicrmacr
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+          - service: ai-service
+            container: ai-service
+            port: "8000"
+          - service: crm-service
+            container: crm-service
+            port: "8001"
+          - service: frontend
+            container: main
+            port: "3000"
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Azure login
+        uses: azure/login@v2
+        with:
+          creds: '{"clientId":"${{ secrets.AZURE_CLIENT_ID }}","clientSecret":"${{ secrets.AZURE_CLIENT_SECRET }}","subscriptionId":"${{ secrets.AZURE_SUBSCRIPTION_ID }}","tenantId":"${{ secrets.AZURE_TENANT_ID }}"}'
+
+      - name: Build & push ${{ matrix.service }} image
+        run: |
+          az acr build \
+            --registry ${{ env.ACR_NAME }} \
+            --image aicrm/${{ matrix.service }}:${{ github.sha }} \
+            --image aicrm/${{ matrix.service }}:latest \
+            ./${{ matrix.service }}
+
+      - name: Point sitecontainer at the new image
+        run: |
+          az webapp sitecontainers update \
+            --name ${{ env.WEBAPP_NAME }} \
+            --resource-group ${{ env.RESOURCE_GROUP }} \
+            --container-name ${{ matrix.container }} \
+            --image ${{ env.ACR_NAME }}.azurecr.io/aicrm/${{ matrix.service }}:${{ github.sha }} \
+            --target-port ${{ matrix.port }} \
+            --auth-type UserCredentials \
+            --user-name ${{ secrets.ACR_USERNAME }} \
+            --password-secret ${{ secrets.ACR_PASSWORD }}
+
+  restart:
+    needs: build-and-push
+    runs-on: ubuntu-latest
+    steps:
+      - name: Azure login
+        uses: azure/login@v2
+        with:
+          creds: '{"clientId":"${{ secrets.AZURE_CLIENT_ID }}","clientSecret":"${{ secrets.AZURE_CLIENT_SECRET }}","subscriptionId":"${{ secrets.AZURE_SUBSCRIPTION_ID }}","tenantId":"${{ secrets.AZURE_TENANT_ID }}"}'
+
+      - name: Restart app so every container picks up its new image
+        run: |
+          az webapp restart --name ${{ env.WEBAPP_NAME }} --resource-group ${{ env.RESOURCE_GROUP }}

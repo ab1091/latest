@@ -1,0 +1,252 @@
+.page {
+    display: flex;
+    min-height: 100vh;
+    background: transparent;
+    color: var(--text-1);
+    font-family: var(--font-sans);
+}
+
+.main {
+    flex: 1;
+    margin-left: 220px;
+    padding: 2rem 2.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    max-width: 980px;
+}
+
+.header {
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+}
+
+.headerIcon {
+    width: 46px;
+    height: 46px;
+    border-radius: 13px;
+    background: linear-gradient(135deg, rgba(185, 134, 42, 0.18) 0%, rgba(185, 134, 42, 0.06) 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--primary-text);
+    flex-shrink: 0;
+}
+
+.headerInfo h1 {
+    font-family: var(--font-display);
+    font-size: 20px;
+    margin: 0;
+}
+
+.headerInfo p {
+    margin: 2px 0 0;
+    font-size: 12.5px;
+    color: var(--text-3);
+}
+
+.tabRail {
+    display: flex;
+    gap: 4px;
+    border-bottom: 1px solid var(--border-subtle);
+    flex-wrap: wrap;
+}
+
+.tab {
+    padding: 9px 14px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-3);
+    background: none;
+    border: none;
+    border-bottom: 2px solid transparent;
+    cursor: pointer;
+}
+
+.tabActive {
+    color: var(--text-1);
+    border-bottom-color: var(--primary);
+}
+
+.panel {
+    background: var(--bg-raised);
+    border: 1px solid var(--border-default);
+    border-radius: var(--r-lg);
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.stageRow {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 12px;
+    border-radius: var(--r-md);
+    background: var(--bg-surface);
+    border: 1px solid var(--border-subtle);
+}
+
+.colorDot {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    border: 2px solid rgba(255, 255, 255, 0.15);
+}
+
+.stageLabel {
+    flex: 1;
+    background: transparent;
+    border: none;
+    color: var(--text-1);
+    font-size: 13.5px;
+    font-weight: 600;
+}
+
+.field {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.field label {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text-3);
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+}
+
+.field input,
+.field select,
+.field textarea {
+    background: var(--bg-surface);
+    border: 1px solid var(--border-default);
+    border-radius: var(--r-sm);
+    padding: 8px 10px;
+    font-size: 13px;
+    color: var(--text-1);
+}
+
+.grid2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+}
+
+.modeOptions {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.modeOption {
+    padding: 10px 14px;
+    border-radius: var(--r-md);
+    border: 1.5px solid var(--border-default);
+    background: var(--bg-surface);
+    color: var(--text-2);
+    font-size: 12.5px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.modeOptionActive {
+    border-color: var(--primary);
+    background: var(--primary-subtle);
+    color: var(--primary-text);
+}
+
+.staffCheckList {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+.staffCheckItem {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    color: var(--text-2);
+}
+
+.scoreRow {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.scoreLabel {
+    width: 180px;
+    font-size: 13px;
+    color: var(--text-1);
+    font-weight: 600;
+}
+
+.scoreWeight {
+    width: 60px;
+    text-align: center;
+}
+
+.btnPrimary {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 9px 16px;
+    border-radius: 10px;
+    background: var(--primary);
+    color: var(--on-primary);
+    border: none;
+    font-weight: 600;
+    font-size: 13px;
+    cursor: pointer;
+    align-self: flex-start;
+}
+
+.btnSecondary {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 7px 12px;
+    border-radius: 8px;
+    background: var(--bg-surface);
+    color: var(--text-2);
+    border: 1px solid var(--border-default);
+    font-weight: 600;
+    font-size: 12px;
+    cursor: pointer;
+}
+
+.savedNote {
+    font-size: 12px;
+    color: var(--status-success);
+}
+
+.funnelBar {
+    display: flex;
+    border-radius: var(--r-md);
+    overflow: hidden;
+    height: 40px;
+}
+
+.funnelSegment {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    font-size: 11.5px;
+    font-weight: 700;
+    flex: 1;
+}

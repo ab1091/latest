@@ -1,0 +1,487 @@
+.page {
+    display: flex;
+    min-height: 100vh;
+    background: transparent;
+    color: var(--text-1);
+    font-family: var(--font-sans);
+}
+
+.main {
+    flex: 1;
+    margin-left: 220px;
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+}
+
+.topBar {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 20px;
+    border-bottom: 1px solid var(--border-subtle);
+    flex-shrink: 0;
+}
+
+.backLink {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    color: var(--text-3);
+    font-size: 12.5px;
+    cursor: pointer;
+    background: none;
+    border: none;
+}
+
+.workspace {
+    flex: 1;
+    display: grid;
+    grid-template-columns: 280px 1fr 300px;
+    overflow: hidden;
+}
+
+.panel {
+    overflow-y: auto;
+    padding: 20px;
+}
+
+.leftPanel {
+    border-right: 1px solid var(--border-subtle);
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.rightPanel {
+    border-left: 1px solid var(--border-subtle);
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+}
+
+.centerPanel {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.avatarBlock {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 8px;
+}
+
+.avatar {
+    width: 64px;
+    height: 64px;
+    border-radius: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    font-size: 22px;
+    background: var(--primary-subtle);
+    color: var(--primary-text);
+}
+
+.leadName {
+    font-family: var(--font-display);
+    font-size: 17px;
+    font-weight: 700;
+}
+
+.stagePill {
+    display: inline-flex;
+    padding: 4px 12px;
+    border-radius: var(--r-pill);
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+}
+
+.scoreCard {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    padding: 16px;
+    border-radius: var(--r-lg);
+    background: var(--bg-raised);
+    border: 1px solid var(--border-default);
+}
+
+.scoreRing {
+    position: relative;
+    width: 84px;
+    height: 84px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.scoreNum {
+    font-size: 22px;
+    font-weight: 800;
+}
+
+.scoreBand {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+.infoList {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.infoRow {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12.5px;
+    color: var(--text-2);
+}
+
+.infoRow svg {
+    color: var(--text-4);
+    flex-shrink: 0;
+}
+
+.tagRow {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.tagPill {
+    font-size: 10.5px;
+    font-weight: 600;
+    padding: 3px 9px;
+    border-radius: var(--r-pill);
+    background: var(--primary-subtle);
+    color: var(--primary-text);
+}
+
+.quickActions {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.quickActionBtn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 9px 12px;
+    border-radius: var(--r-md);
+    background: var(--bg-surface);
+    border: 1px solid var(--border-default);
+    color: var(--text-1);
+    font-size: 12.5px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.sectionLabel {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--text-3);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    margin-bottom: 8px;
+}
+
+.tabRail {
+    display: flex;
+    gap: 4px;
+    border-bottom: 1px solid var(--border-subtle);
+}
+
+.tab {
+    padding: 8px 12px;
+    font-size: 12.5px;
+    font-weight: 600;
+    color: var(--text-3);
+    background: none;
+    border: none;
+    border-bottom: 2px solid transparent;
+    cursor: pointer;
+}
+
+.tabActive {
+    color: var(--text-1);
+    border-bottom-color: var(--primary);
+}
+
+.dayGroup {
+    display: flex;
+    gap: 0;
+}
+
+.dayMarker {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 40px;
+    flex-shrink: 0;
+}
+
+.dayDot {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: var(--primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+    font-weight: 800;
+    color: var(--on-primary);
+    flex-shrink: 0;
+}
+
+.dayLine {
+    width: 2px;
+    flex: 1;
+    background: var(--border-default);
+    min-height: 12px;
+}
+
+.dayContent {
+    flex: 1;
+    padding-bottom: 16px;
+    padding-left: 8px;
+}
+
+.dayLabel {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--text-2);
+    margin-bottom: 8px;
+    padding-top: 4px;
+}
+
+.eventCard {
+    padding: 10px 12px;
+    border-radius: 10px;
+    background: var(--bg-raised);
+    border: 1px solid var(--border-subtle);
+    margin-bottom: 6px;
+}
+
+.eventTop {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+}
+
+.eventIcon {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.eventTitle {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--text-1);
+}
+
+.eventTime {
+    font-size: 10px;
+    color: var(--text-4);
+    margin-left: auto;
+}
+
+.eventBody {
+    font-size: 11.5px;
+    color: var(--text-3);
+    margin-top: 5px;
+}
+
+.convCard {
+    padding: 12px 14px;
+    border-radius: 12px;
+    background: var(--bg-raised);
+    border: 1px solid var(--border-subtle);
+    cursor: pointer;
+}
+
+.thread {
+    margin-top: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    max-height: 65vh;
+    overflow-y: auto;
+    padding: 14px;
+    background: var(--bg-surface);
+    border-radius: 10px;
+}
+
+.bubble {
+    max-width: 80%;
+    padding: 10px 14px;
+    border-radius: 12px;
+    font-size: 13.5px;
+    line-height: 1.5;
+}
+
+.bubbleUser {
+    align-self: flex-start;
+    background: var(--surface-muted);
+    color: var(--text-1);
+}
+
+.bubbleAgent {
+    align-self: flex-end;
+    background: var(--primary-subtle);
+    color: var(--primary-text);
+}
+
+.noteCard, .taskCard {
+    padding: 10px 12px;
+    border-radius: 10px;
+    background: var(--bg-raised);
+    border: 1px solid var(--border-subtle);
+    margin-bottom: 8px;
+    font-size: 12.5px;
+}
+
+.addBox {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 12px;
+}
+
+.addBox input, .addBox textarea {
+    flex: 1;
+    background: var(--bg-surface);
+    border: 1px solid var(--border-default);
+    border-radius: var(--r-sm);
+    padding: 8px 10px;
+    font-size: 12.5px;
+    color: var(--text-1);
+}
+
+.addBtn {
+    padding: 8px 14px;
+    border-radius: 8px;
+    background: var(--primary);
+    color: var(--on-primary);
+    border: none;
+    font-weight: 600;
+    font-size: 12px;
+    cursor: pointer;
+    white-space: nowrap;
+}
+
+.enrollmentCard {
+    padding: 14px;
+    border-radius: var(--r-lg);
+    background: var(--bg-raised);
+    border: 1px solid var(--border-default);
+}
+
+.progressBar {
+    height: 6px;
+    border-radius: 4px;
+    background: var(--surface-muted);
+    overflow: hidden;
+    margin-top: 8px;
+}
+
+.progressFill {
+    height: 100%;
+    background: var(--primary);
+    transition: width 1s linear;
+}
+
+.countdownText {
+    font-size: 11px;
+    color: var(--text-4);
+    margin-top: 6px;
+    font-variant-numeric: tabular-nums;
+}
+
+.apptCard {
+    padding: 10px 12px;
+    border-radius: 10px;
+    background: var(--bg-raised);
+    border: 1px solid var(--border-subtle);
+    margin-bottom: 8px;
+    font-size: 12px;
+}
+
+.emailContainer {
+    margin-top: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.emailView {
+    background: var(--bg-surface);
+    border: 1px solid var(--border-default);
+    border-radius: 12px;
+    padding: 18px 20px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.emailTopBar {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding-bottom: 14px;
+    border-bottom: 1px solid var(--border-subtle);
+    gap: 16px;
+}
+
+.emailSubjectTitle {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--text-1);
+    margin-bottom: 6px;
+}
+
+.emailMetaRow {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    font-size: 11.5px;
+    color: var(--text-3);
+}
+
+.emailDeliveredBadge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 700;
+    background: rgba(34, 197, 94, 0.12);
+    color: #22c55e;
+    flex-shrink: 0;
+}
+
+.emailContentBody {
+    margin-top: 16px;
+    font-size: 13.5px;
+    line-height: 1.6;
+    color: var(--text-1);
+    white-space: pre-wrap;
+    font-family: inherit;
+}

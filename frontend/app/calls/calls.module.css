@@ -1,0 +1,426 @@
+.page {
+    min-height: 100vh;
+    background: var(--bg-surface);
+    color: var(--text-2);
+}
+
+.main {
+    margin-left: 220px;
+    padding: 32px 36px;
+}
+
+.header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 24px;
+}
+
+.title {
+    font-family: var(--font-display);
+    font-size: 22px;
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    color: var(--text-1);
+}
+
+.subtitle {
+    margin-top: 4px;
+    font-size: 13px;
+    color: var(--text-4);
+}
+
+.statsGrid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+    margin-bottom: 24px;
+}
+
+.statCard {
+    padding: 20px;
+    border-radius: 12px;
+    background: var(--surface-panel);
+    border: 1px solid var(--border-subtle);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    box-shadow: var(--shadow-soft);
+}
+
+.statValue {
+    font-family: var(--font-display);
+    font-size: 32px;
+    font-weight: 900;
+    line-height: 1;
+    letter-spacing: -0.02em;
+}
+
+.statPrimary { color: var(--primary); text-shadow: 0 0 20px var(--primary-border); }
+.statWarning { color: var(--status-warning); text-shadow: 0 0 20px var(--status-warning-bg); }
+.statMuted { color: var(--text-4); }
+
+.statLabel {
+    margin-top: 8px;
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--text-4);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.filters {
+    display: flex;
+    gap: 4px;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.filterPills {
+    display: flex;
+    gap: 4px;
+    flex-wrap: wrap;
+}
+
+.searchBox {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 10px;
+    border-radius: 8px;
+    border: 1px solid var(--border-default);
+    background: var(--bg-card);
+    color: var(--text-4);
+    min-width: 220px;
+}
+
+.searchBox input {
+    border: none;
+    background: transparent;
+    outline: none;
+    font-size: 12.5px;
+    color: var(--text-1);
+    width: 100%;
+}
+
+.filterPill {
+    padding: 6px 14px;
+    border-radius: 6px;
+    border: 1px solid transparent;
+    background: transparent;
+    color: var(--text-4);
+    font-size: 13px;
+    font-family: inherit;
+    cursor: pointer;
+    transition: all 0.12s ease;
+}
+
+.filterPillActive {
+    background: var(--surface-highlight);
+    border-color: var(--primary-border);
+    color: var(--primary);
+    font-weight: 500;
+}
+
+.tableShell {
+    border-radius: 12px;
+    overflow: hidden;
+    background: var(--surface-panel);
+    border: 1px solid var(--border-subtle);
+}
+
+.tableHeader,
+.tableRow {
+    display: grid;
+    grid-template-columns: 1fr 1fr 160px 110px 80px 40px;
+    gap: 12px;
+    align-items: center;
+    padding: 10px 20px;
+}
+
+.tableHeader {
+    border-bottom: 1px solid var(--border-subtle);
+    background: var(--surface-muted);
+}
+
+.tableHeader > div {
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--text-4);
+}
+
+.rowBlock {
+    border-bottom: 1px solid var(--border-subtle);
+}
+
+.rowBlock:last-child {
+    border-bottom: none;
+}
+
+.tableRow {
+    width: 100%;
+    border: none;
+    background: transparent;
+    text-align: left;
+    cursor: pointer;
+}
+
+.tableRow:hover {
+    background: var(--surface-muted);
+}
+
+.primaryText {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text-1);
+}
+
+.rowText,
+.duration {
+    font-size: 13px;
+    color: var(--text-2);
+}
+
+.secondaryText {
+    margin-top: 2px;
+    font-size: 11px;
+    color: var(--text-4);
+}
+
+.outcomeBadge {
+    display: inline-flex;
+    align-items: center;
+    padding: 3px 9px;
+    border-radius: 99px;
+    font-size: 11px;
+    font-weight: 500;
+}
+
+.outcomeConfirmed {
+    background: var(--status-success-bg);
+    border: 1px solid var(--primary-border);
+    color: var(--status-success);
+}
+
+.outcomeRescheduled {
+    background: var(--status-warning-bg);
+    border: 1px solid var(--status-warning);
+    color: var(--status-warning);
+}
+
+.outcomeNeutral {
+    background: var(--surface-muted);
+    border: 1px solid var(--border-default);
+    color: var(--text-3);
+}
+
+.outcomeCancelled {
+    background: var(--status-danger-bg);
+    border: 1px solid var(--status-danger);
+    color: var(--status-danger);
+}
+
+.groupChildren {
+    background: var(--surface-muted);
+    border-top: 1px solid var(--border-subtle);
+}
+
+.childBlock {
+    border-bottom: 1px solid var(--border-subtle);
+}
+
+.childBlock:last-child {
+    border-bottom: none;
+}
+
+.childRow {
+    padding-left: 44px;
+}
+
+.chevronCell {
+    display: flex;
+    justify-content: center;
+    color: var(--text-4);
+}
+
+.chevronOpen {
+    transform: rotate(180deg);
+}
+
+.expandedPanel {
+    padding: 20px;
+    background: var(--surface-muted);
+    border-top: 1px solid var(--border-subtle);
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+.panelHeader {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.panelTitle {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--text-1);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.recordingLink {
+    font-size: 12px;
+    color: var(--primary);
+    text-decoration: none;
+    font-weight: 600;
+    padding: 4px 10px;
+    background: var(--surface-highlight);
+    border-radius: 6px;
+    transition: all 0.2s;
+}
+
+.recordingLink:hover {
+    background: var(--primary-subtle);
+}
+
+.sectionLabel {
+    font-size: 10px;
+    font-weight: 700;
+    color: var(--text-4);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 12px;
+}
+
+.summaryText {
+    margin: 0;
+    font-size: 13px;
+    line-height: 1.6;
+    color: var(--text-3);
+    background: var(--surface-muted);
+    padding: 12px 16px;
+    border-radius: 8px;
+    border-left: 2px solid var(--primary);
+}
+
+.transcriptFlow {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.chatRow {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+}
+
+.chatAvatar {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 9px;
+    font-weight: 800;
+    flex-shrink: 0;
+    margin-top: 2px;
+}
+
+.chatAi .chatAvatar {
+    background: var(--primary);
+    color: var(--on-primary);
+}
+
+.chatPatient .chatAvatar {
+    background: var(--surface-muted);
+    color: var(--text-2);
+}
+
+.chatBubble {
+    max-width: 85%;
+    padding: 10px 14px;
+    font-size: 13px;
+    line-height: 1.5;
+    border-radius: 12px;
+}
+
+.chatAi .chatBubble {
+    background: var(--bg-surface);
+    color: var(--text-1);
+    border: 1px solid var(--primary-border);
+}
+
+.chatPatient .chatBubble {
+    background: transparent;
+    color: var(--text-2);
+    border: 1px solid var(--border-default);
+}
+
+.emptyState,
+.loadingScreen {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-4);
+}
+
+.emptyState {
+    padding: 40px;
+    font-size: 13px;
+}
+
+.loadingScreen {
+    min-height: 100vh;
+    flex-direction: column;
+    gap: 16px;
+    background: var(--bg-surface);
+    color: var(--text-1);
+}
+
+.spinner {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    border: 3px solid var(--border-subtle);
+    border-left-color: var(--primary);
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+@media (max-width: 1100px) {
+    .statsGrid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .tableHeader,
+    .tableRow {
+        grid-template-columns: 1fr 1fr 140px 110px 70px 36px;
+    }
+}
+
+@media (max-width: 900px) {
+    .main {
+        margin-left: 0;
+        padding: 20px 16px;
+    }
+
+    .tableHeader {
+        display: none;
+    }
+
+    .tableRow {
+        grid-template-columns: 1fr;
+    }
+}

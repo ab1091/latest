@@ -1,0 +1,28 @@
+RILEY — FULL TEST CONVERSATION (auto-only, casual language, appointment booking)
+Lead: Bee — auto need: just bought a car, needs it insured before driving off lot
+(Test run via mocked SMS send — no real message sent to +16452067656, no real iMessage used)
+
+Lead:  hi, I just bought a car and need to get it insured before I can drive it off the lot
+Riley: hey there! nice, congrats on the new ride! 🚗 what kind of car did you get?
+
+Lead:  it's a 2022 Toyota RAV4, I'm in Austin TX 78704
+Riley: got it, a 2022 RAV4 — sweet choice! are you looking for a new policy, or switching from another provider?
+
+Lead:  no current coverage, this is a brand new policy, I don't have anything yet
+Riley: thanks for clarifying! sounds like we should get you set up with a licensed agent to help you find the right coverage. want me to grab you a time to chat?
+
+Lead:  yeah I'd like to set up a time to talk
+Riley: awesome! what time works best for you — morning, afternoon, or evening?
+
+Lead:  afternoon works for me
+Riley: great! how about 2:00 PM tomorrow? does that work for you?
+
+Lead:  yes that works, book it
+Riley: perfect! I'll set you up for 2:00 PM tomorrow. Just to confirm, is this the email you want the invite sent to: alibaig1091@gmail.com?
+
+Lead:  yes that's correct, go ahead
+Riley: awesome, I've got you booked for 2:00 PM tomorrow! You'll get an invite sent to alibaig1091@gmail.com. Talk soon! 😊
+Riley: New appointment booked: Bee — Consultation on Tue, Sep 01 at 02:00 PM.
+Riley: You're all set! Your Consultation is booked for Tuesday, Sep 01 at 02:00 PM 😊 Talk soon!
+
+--- APPOINTMENT SUCCESSFULLY BOOKED — real Google Calendar event created for lead Bee ---

@@ -1,0 +1,323 @@
+.splitContainer {
+    display: flex;
+    min-height: 100vh;
+    width: 100%;
+    background: var(--bg-root);
+    color: var(--text-1);
+    font-family: var(--font-inter);
+}
+
+.leftPane {
+    flex: 1;
+    max-width: 560px;
+    background: radial-gradient(100% 100% at 0% 0%, rgba(185, 134, 42, 0.08) 0%, var(--bg-app) 100%);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 3rem 3.5rem;
+    position: relative;
+    border-right: 1px solid var(--border-subtle);
+}
+
+@media (max-width: 900px) {
+    .leftPane {
+        display: none;
+    }
+}
+
+.brandLockup {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    color: var(--text-1);
+    font-weight: 700;
+    font-size: 1.1rem;
+    font-family: var(--font-outfit);
+    letter-spacing: -0.02em;
+    text-decoration: none;
+}
+
+.brandIcon {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    background: var(--primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--on-primary);
+}
+
+.marketingContent {
+    margin-top: -10vh;
+}
+
+.marketingContent h1 {
+    font-family: var(--font-outfit);
+    font-size: 2.35rem;
+    font-weight: 800;
+    line-height: 1.15;
+    margin-bottom: 1.5rem;
+    color: var(--text-1);
+    letter-spacing: -0.03em;
+}
+
+.marketingContent h1 span {
+    display: inline-block; /* Fix for inner motion spans */
+}
+
+.headingLine1, .headingLine2 {
+    display: block;
+    white-space: nowrap;
+    color: var(--text-1); /* High contrast dark text for light mode */
+}
+
+.headingLine3 {
+    display: block;
+    white-space: nowrap;
+    margin-top: 0.5rem;
+    color: var(--primary); /* Green in light mode */
+    font-size: 1.2em; /* Increased size for prominence */
+    line-height: 1.1;
+    letter-spacing: -0.04em;
+    text-shadow: 0 4px 24px var(--primary-soft);
+}
+
+:global([data-theme='dark']) .headingLine1,
+:global([data-theme='dark']) .headingLine2 {
+    color: var(--primary) !important; /* Green in dark mode */
+    text-shadow: 0 4px 24px rgba(201, 154, 58, 0.3) !important; /* Glow effect */
+}
+
+:global([data-theme='dark']) .headingLine3 {
+    color: #000000 !important; /* Black in dark mode */
+    -webkit-text-stroke: 1.5px var(--primary); /* Outline effect to make black text visible on dark background */
+    text-shadow: 0 8px 32px rgba(201, 154, 58, 0.25) !important;
+}
+
+.marketingContent p {
+    font-size: 1.05rem;
+    line-height: 1.6;
+    color: var(--text-3);
+    max-width: 380px;
+}
+
+.stats {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.statItem {
+    display: flex;
+    align-items: baseline;
+    gap: 0.75rem;
+}
+
+.statNum {
+    font-family: var(--font-outfit);
+    font-weight: 800;
+    font-size: 1.3rem;
+    color: var(--primary);
+    width: 60px;
+}
+
+.statLabel {
+    font-size: 0.75rem;
+    color: var(--text-3);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-weight: 600;
+}
+
+.rightPane {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+    position: relative;
+}
+
+.formContainer {
+    width: 100%;
+    max-width: 400px;
+    display: flex;
+    flex-direction: column;
+}
+
+.header {
+    margin-bottom: 2rem;
+}
+
+.title {
+    font-family: var(--font-outfit);
+    font-size: 2rem;
+    font-weight: 800;
+    color: var(--text-1);
+    margin-bottom: 0.5rem;
+    letter-spacing: -0.02em;
+}
+
+.subtitle {
+    font-size: 0.9rem;
+    color: var(--text-4);
+}
+
+.error {
+    margin-bottom: 1.5rem;
+    padding: 0.75rem 1rem;
+    border-radius: 8px;
+    background: var(--status-danger-bg);
+    border: 1px solid rgba(255, 143, 143, 0.2);
+    color: var(--status-danger);
+    font-size: 0.85rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+}
+
+.row {
+    display: flex;
+    gap: 1rem;
+}
+
+.row > * {
+    flex: 1;
+}
+
+.inputGroup {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.inputGroup label {
+    font-size: 0.7rem;
+    font-weight: 700;
+    color: var(--text-4);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+}
+
+.inputGroup input {
+    width: 100%;
+    padding: 0.85rem 1rem;
+    border-radius: 8px;
+    background: var(--surface-muted);
+    border: 1px solid var(--border-subtle);
+    color: var(--text-1);
+    font-size: 0.9rem;
+    transition: all 0.2s;
+    font-family: var(--font-inter);
+}
+
+.inputGroup input:focus {
+    outline: none;
+    border-color: rgba(14, 165, 233, 0.4);
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.primaryBtn {
+    width: 100%;
+    padding: 0.85rem;
+    border-radius: 8px;
+    background: var(--primary);
+    color: var(--on-primary);
+    font-weight: 600;
+    font-size: 0.95rem;
+    border: none;
+    cursor: pointer;
+    transition: opacity 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    font-family: var(--font-inter);
+    margin-top: 0.5rem;
+}
+
+.primaryBtn:hover:not(:disabled) {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px var(--primary-soft);
+    opacity: 0.95;
+}
+
+.primaryBtn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.divider {
+    display: flex;
+    align-items: center;
+    margin: 1.5rem 0;
+    color: var(--text-4);
+    font-size: 0.75rem;
+}
+
+.divider::before,
+.divider::after {
+    content: '';
+    flex: 1;
+    border-bottom: 1px solid var(--border-default);
+}
+
+.divider span {
+    padding: 0 1rem;
+}
+
+.googleBtn {
+    width: 100%;
+    padding: 0.85rem;
+    border-radius: 8px;
+    background: var(--surface-muted);
+    border: 1px solid var(--border-default);
+    color: var(--text-1);
+    font-weight: 500;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: background 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    font-family: var(--font-inter);
+}
+
+.googleBtn:hover {
+    background: var(--surface-highlight);
+    border-color: var(--border-strong);
+    transform: translateY(-1px);
+}
+
+.footer {
+    margin-top: 2rem;
+    text-align: center;
+    font-size: 0.85rem;
+    color: var(--text-4);
+}
+
+.link {
+    color: var(--primary);
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.link:hover {
+    text-decoration: underline;
+}
+
+.termsText {
+    margin-top: 1.5rem;
+    font-size: 0.75rem;
+    color: var(--text-4);
+    text-align: center;
+    line-height: 1.5;
+}
