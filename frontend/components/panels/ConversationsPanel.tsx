@@ -11,7 +11,7 @@ import { useSearchParams } from 'next/navigation';
 import { DateRangeFilter, DEFAULT_DATE_RANGE, inDateRange, type DateRangeValue } from '@/components/DateRangeFilter/DateRangeFilter';
 import styles from '@/app/conversations/conversations.module.css';
 
-const POLL_MS  = 10000;
+const POLL_MS  = 2500;
 
 const STATUS_OPTIONS = ['new','contacted','qualified','converted','dead'];
 const STATUS_COLORS: Record<string, string> = {
@@ -21,6 +21,18 @@ const STATUS_COLORS: Record<string, string> = {
     converted: styles.sConverted,
     dead:      styles.sDead,
 };
+
+function formatDeliveryError(reason?: string | null): string {
+    if (!reason) return '';
+    const lower = reason.toLowerCase();
+    if (lower.includes('bluebubbles') || lower.includes('message send error') || lower.includes('not registered') || lower.includes('500') || lower.includes('502')) {
+        return 'Non-iMessage Number (Android or Landline)';
+    }
+    if (lower.includes('rate limit') || lower.includes('velocity')) {
+        return 'Hourly Velocity Limit Reached';
+    }
+    return reason.slice(0, 60);
+}
 
 interface Conversation {
     id: string; lead_id: string; agent_id: string | null;
@@ -87,7 +99,11 @@ export function ConversationsInner({ embedded = false }: { embedded?: boolean } 
         if (!quiet) setLoading(false);
     }, [accessToken, h]);
 
-    useEffect(() => { loadConversations(); }, [loadConversations]);
+    useEffect(() => {
+        loadConversations();
+        const convListTimer = setInterval(() => loadConversations(true), 3000);
+        return () => clearInterval(convListTimer);
+    }, [loadConversations]);
 
     // ── Auto-scroll to bottom ────────────────────────────────────────────────
     useEffect(() => {
@@ -148,16 +164,50 @@ export function ConversationsInner({ embedded = false }: { embedded?: boolean } 
         loadLeadDetail(conv.lead_id);
     }, [h, loadLeadDetail]);
 
-    // Auto-select conv from URL param OR first conversation on load
+    // Sync repliedOnly filter with query param on route change
     useEffect(() => {
-        if (!initialLoad.current || conversations.length === 0) return;
-        initialLoad.current = false;
+        const eng = searchParams.get('engagement');
+        if (eng === 'replied') {
+            setRepliedOnly(true);
+        } else if (eng === 'all') {
+            setRepliedOnly(false);
+        }
+    }, [searchParams]);
+
+    // Auto-select conv from URL param OR first relevant conversation on load
+    useEffect(() => {
+        if (conversations.length === 0) return;
         const convId = searchParams.get('conv');
-        const found = convId
-            ? conversations.find(c => c.id === convId)
-            : conversations[0];
-        if (found) selectConv(found);
-    }, [conversations, searchParams, selectConv]);
+        const isRepliedOnly = repliedOnly || searchParams.get('engagement') === 'replied';
+
+        if (initialLoad.current) {
+            initialLoad.current = false;
+            let target: Conversation | undefined;
+            if (convId) {
+                target = conversations.find(c => c.id === convId);
+            }
+            if (!target && isRepliedOnly) {
+                target = conversations.find(c => c.has_reply);
+            }
+            if (!target) {
+                target = conversations[0];
+            }
+            if (target) selectConv(target);
+        } else if (convId && activeConv?.id !== convId) {
+            const target = conversations.find(c => c.id === convId);
+            if (target) selectConv(target);
+        }
+    }, [conversations, searchParams, selectConv, repliedOnly, activeConv]);
+
+    // If viewing 'Replied only' and currently active conversation has no reply, switch to one with replies
+    useEffect(() => {
+        if (repliedOnly && activeConv && !activeConv.has_reply && conversations.length > 0) {
+            const repliedTarget = conversations.find(c => c.has_reply);
+            if (repliedTarget && repliedTarget.id !== activeConv.id) {
+                selectConv(repliedTarget);
+            }
+        }
+    }, [repliedOnly, activeConv, conversations, selectConv]);
 
     // ── Send message ─────────────────────────────────────────────────────────
     const sendMessage = async () => {
@@ -627,7 +677,7 @@ export function ConversationsInner({ embedded = false }: { embedded?: boolean } 
                                                     color: '#ef4444'
                                                 }}>
                                                     <div style={{ fontWeight: 600, marginBottom: 2 }}>
-                                                        ⚠️ Delivery Failed {msg.error_reason ? `(${msg.error_reason.slice(0, 60)})` : ''}
+                                                        ⚠️ Delivery Failed: {formatDeliveryError(msg.error_reason)}
                                                     </div>
                                                     <div style={{ display: 'flex', gap: 6, marginTop: 4 }}>
                                                         <button
@@ -643,7 +693,7 @@ export function ConversationsInner({ embedded = false }: { embedded?: boolean } 
                                                                 fontWeight: 600,
                                                                 cursor: 'pointer'
                                                             }}>
-                                                            {retryingMsgId === msg.id ? 'Retrying...' : 'Retry iMessage'}
+                                                            {retryingMsgId === msg.id ? 'Retrying...' : 'Retry Send'}
                                                         </button>
                                                     </div>
                                                 </div>

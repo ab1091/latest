@@ -21,7 +21,7 @@ from core.config import (
     TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN,
     TWILIO_FROM_NUMBER, TWILIO_WHATSAPP_FROM, OPENAI_API_KEY, GROQ_API_KEY, DEFAULT_BUSINESS_ID,
 )
-from core import bluebubbles
+from core import bluebubbles, textbee
 from core.lead_transitions import transition_via_crm_api, trigger_summary_generation, create_lead_from_inbound
 from api.common import get_user
 from core.auth_scope import get_business_id
@@ -198,18 +198,19 @@ async def _send_sms(to: str, body: str, channel: str = "sms", force: bool = Fals
         logger.warning(f"[sms:blocked] Outbound WhatsApp/Twilio blocked: strictly iMessage only per system configuration")
         raise HTTPException(status_code=400, detail="Twilio is disabled. Outbound messaging is strictly iMessage only.")
 
-    # ── SMS / iMessage via BlueBubbles (iMessage ONLY, no Twilio fallback) ──
-    # Check circuit breaker safety state
-    allowed, cb_reason = circuit_breaker.is_available()
-    if not allowed:
-        logger.warning(f"[sms:circuit_breaker] iMessage send blocked: {cb_reason}")
-        raise HTTPException(status_code=503, detail=cb_reason)
+    # ── SMS / iMessage via BlueBubbles (Native SMS text relay primary) ──
+    if not force:
+        # Check circuit breaker safety state
+        allowed, cb_reason = circuit_breaker.is_available()
+        if not allowed:
+            logger.warning(f"[sms:circuit_breaker] send blocked: {cb_reason}")
+            raise HTTPException(status_code=503, detail=cb_reason)
 
-    # Check velocity limit
-    vel_ok, vel_reason = humanoid_sender.check_velocity_limit()
-    if not vel_ok:
-        logger.warning(f"[sms:velocity] {vel_reason}")
-        raise HTTPException(status_code=429, detail=vel_reason)
+        # Check velocity limit
+        vel_ok, vel_reason = humanoid_sender.check_velocity_limit()
+        if not vel_ok:
+            logger.warning(f"[sms:velocity] {vel_reason}")
+            raise HTTPException(status_code=429, detail=vel_reason)
 
     async with _bluebubbles_lock:
         # Enforce randomized human cadence interval between outbound messages
@@ -219,15 +220,19 @@ async def _send_sms(to: str, body: str, channel: str = "sms", force: bool = Fals
         await humanoid_sender.simulate_typing(body)
 
         try:
-            res = await bluebubbles.send_message(raw_phone, body)
+            sms_provider = os.getenv("SMS_GATEWAY_PROVIDER", "textbee").lower()
+            if sms_provider == "textbee":
+                res = await textbee.send_message(raw_phone, body)
+            else:
+                res = await bluebubbles.send_message(raw_phone, body)
             humanoid_sender.record_outbound_send()
             await circuit_breaker.record_success()
             return res
         except RuntimeError as e:
             err_str = str(e)
             await circuit_breaker.record_failure(err_str)
-            logger.warning(f"[sms:imessage_only] BlueBubbles iMessage send failed for {raw_phone}: {err_str}")
-            raise HTTPException(status_code=502, detail=f"iMessage delivery failed: {err_str}")
+            logger.warning(f"[sms:send] SMS delivery failed for {raw_phone}: {err_str}")
+            raise HTTPException(status_code=502, detail=f"SMS delivery failed: {err_str}")
 
 
 
@@ -404,12 +409,12 @@ def _get_agent_prompt(business_id: str, lead_tags: list, lead_stage: str = None)
                 ) else DEFAULT_LLM_MODEL
                 return {"prompt": prompt, "model": model, "name": cfg["name"]}
 
-        # Fallback to the business's active agent (e.g. Troy)
+        # Fallback to the business's active agent (e.g. Alex / AllZone)
         cur.execute("""
             SELECT a.sms_prompt, a.system_prompt, a.name, a.persona, a.llm_model
             FROM ai_agents a
             WHERE a.business_id = %s
-            ORDER BY (a.name = 'Troy') DESC, (a.status = 'active') DESC, a.created_at ASC
+            ORDER BY (a.name IN ('Alex', 'AllZone', 'Troy')) DESC, (a.status = 'active') DESC, a.created_at ASC
             LIMIT 1
         """, (business_id,))
         fallback = cur.fetchone()
@@ -1200,7 +1205,7 @@ async def _book_appointment(lead_id: str, business_id: str, from_phone: str, con
                     (conv_id,)
                 )
                 for r in cur.fetchall():
-                    sender_label = "Troy (Farmers Insurance)" if r["role"] in ("agent", "assistant") else (first_name or "You")
+                    sender_label = "Alex (AllZone Technologies)" if r["role"] in ("agent", "assistant") else (first_name or "You")
                     convo_lines.append(f"• {sender_label}: \"{r['content']}\"")
             except Exception as e:
                 logger.warning(f"[sms:appt] failed to fetch conversation history for email: {e}")
@@ -2138,19 +2143,19 @@ async def _handle_inbound_message(from_phone: str, message: str, channel: str):
             # Warm & polite re-engagement for existing customers
             if any(phrase in msg_lower for phrase in (
                 "already customer", "already customers", "already a customer",
-                "already with farmers", "already with you", "already have farmers",
-                "already have insurance with you", "current customer", "existing customer",
-                "have farmers already", "we use farmers", "i use farmers", "with farmers already"
+                "already with allzone", "already working with you", "already a client",
+                "current client", "existing client", "current customer", "existing customer",
+                "work with allzone", "we use allzone", "i use allzone", "working with allzone already"
             )):
                 system_prompt += (
-                    "\n\nEXISTING CUSTOMER (WARM & POLITE RE-ENGAGEMENT):\n"
-                    "The recipient just mentioned that they are already a customer with Farmers Insurance!\n"
+                    "\n\nEXISTING CLIENT (WARM & POLITE RE-ENGAGEMENT):\n"
+                    "The recipient just mentioned that they are already a client or partner with AllZone Technologies!\n"
                     "Do NOT send a cold, generic confirmation like 'Got your message' or dismiss them.\n"
-                    "- Warmly and politely thank them for being a valued customer with Farmers.\n"
-                    "- Politely ask which policy or coverage they currently have with us (e.g. Auto, Home, Renters, Life), so you can review their coverage or check if they qualify for extra multi-policy discounts.\n"
+                    "- Warmly thank them for partnering with AllZone.\n"
+                    "- Politely ask how their project or software is performing, or what new AI/engineering capability they are looking into.\n"
                     "- Keep it sweet, polite, and conversational (1-2 short sentences max). Strictly NEVER use em dashes.\n"
                     "Example phrasing:\n"
-                    "\"Oh awesome, thank you so much for being a customer with us! If you don't mind sharing, which policies do you currently have with Farmers? I'd love to make sure you're getting all the multi-policy discounts you qualify for.\"\n"
+                    "\"Oh awesome, thank you so much for partnering with AllZone! How is your system running, or is there a new AI capability or engineering project you'd like to explore?\"\n"
                 )
                 try:
                     # Automatically elevate lead priority in CRM to Top Priority

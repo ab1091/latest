@@ -54,7 +54,11 @@ export default function UserLeads() {
             .finally(() => setLoading(false));
     }, [accessToken]);
 
-    useEffect(() => { fetchLeads(); }, [fetchLeads]);
+    useEffect(() => {
+        fetchLeads();
+        const timer = setInterval(fetchLeads, 3000);
+        return () => clearInterval(timer);
+    }, [fetchLeads]);
 
     const handleImport = async (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0]; if (!file) return;

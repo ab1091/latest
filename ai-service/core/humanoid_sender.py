@@ -103,7 +103,7 @@ class HumanoidSender:
     def _get_daily_count_db(self) -> int:
         """Fetch today's sent count from the messages table as source of truth."""
         try:
-            from core.database import get_conn
+            from core.db import get_conn
             conn = get_conn()
             with conn.cursor() as cur:
                 cur.execute(
@@ -112,7 +112,8 @@ class HumanoidSender:
                 cnt = cur.fetchone()[0]
             conn.close()
             return cnt
-        except Exception:
+        except Exception as e:
+            logger.warning(f"[humanoid_sender] DB daily count lookup error: {e}")
             from datetime import datetime
             midnight = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0).timestamp()
             self._daily_timestamps = [t for t in self._daily_timestamps if t >= midnight]

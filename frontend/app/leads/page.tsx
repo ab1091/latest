@@ -119,6 +119,13 @@ function LeadsPageContent() {
     // Qualified/Not Interested tiles link straight to that exact sub_status
     // instead of the broader (and coarser) pipeline stage.
     const [filterSubStatus] = useState(searchParams.get('status') || '');
+    const [uploadDateFilter, setUploadDateFilter] = useState<string>(searchParams.get('date') || searchParams.get('upload_date') || '');
+
+    useEffect(() => {
+        const d = searchParams.get('date') || searchParams.get('upload_date') || '';
+        setUploadDateFilter(d);
+    }, [searchParams]);
+
     const [filterTag, setFilterTag] = useState('');
     const [dateRange, setDateRange] = useState<DateRangeValue>(DEFAULT_DATE_RANGE);
     const [behaviorFilters, setBehaviorFilters] = useState<BehaviorFilterValue>(DEFAULT_BEHAVIOR_FILTERS);
@@ -243,11 +250,20 @@ function LeadsPageContent() {
         const id = setInterval(() => {
             if (draggedId) return; // don't yank the board out from under an in-progress drag
             load({ silent: true });
-        }, 8000);
+        }, 3000);
         return () => clearInterval(id);
     }, [accessToken, load, draggedId]);
 
     const allTags = Array.from(new Set(leads.flatMap(l => l.tags)));
+
+    const availableUploadDates = useMemo(() => {
+        const counts: Record<string, number> = {};
+        leads.forEach(l => {
+            const d = (l.created_at || '').slice(0, 10);
+            if (d) counts[d] = (counts[d] || 0) + 1;
+        });
+        return Object.entries(counts).sort((a, b) => b[0].localeCompare(a[0]));
+    }, [leads]);
 
     const filtered = leads.filter(l => {
         const q = search.toLowerCase();
@@ -256,7 +272,13 @@ function LeadsPageContent() {
             l.email.toLowerCase().includes(q) ||
             l.phone.includes(q) ||
             l.tags.some(t => t.toLowerCase().includes(q));
-        return matchesSearch && inDateRange(l.created_at, dateRange);
+
+        const matchesUploadDate = !uploadDateFilter || uploadDateFilter === 'all' ||
+            (l.created_at || '').slice(0, 10) === uploadDateFilter;
+
+        const matchesSubStatus = !filterSubStatus || l.sub_status === filterSubStatus;
+
+        return matchesSearch && matchesUploadDate && matchesSubStatus && inDateRange(l.created_at, dateRange);
     });
 
     const initials = (l: Lead) =>
@@ -559,6 +581,38 @@ function LeadsPageContent() {
 
                     <BehaviorFilters value={behaviorFilters} onChange={setBehaviorFilters} />
 
+                    {availableUploadDates.length > 0 && (
+                        <select
+                            className={styles.filterSelect}
+                            value={uploadDateFilter}
+                            onChange={e => {
+                                const val = e.target.value;
+                                setUploadDateFilter(val);
+                                if (val) {
+                                    router.replace(`/leads?date=${val}`);
+                                } else {
+                                    router.replace('/leads');
+                                }
+                            }}
+                            style={{
+                                borderColor: uploadDateFilter ? 'var(--primary)' : undefined,
+                                background: uploadDateFilter ? 'rgba(212, 169, 79, 0.12)' : undefined,
+                                fontWeight: uploadDateFilter ? 700 : undefined
+                            }}
+                        >
+                            <option value="">All Upload Batches ({leads.length} leads)</option>
+                            {availableUploadDates.map(([d, count]) => {
+                                const dateObj = new Date(d + 'T00:00:00');
+                                const fmt = dateObj.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+                                return (
+                                    <option key={d} value={d}>
+                                        📅 {fmt} ({count} leads)
+                                    </option>
+                                );
+                            })}
+                        </select>
+                    )}
+
                     <DateRangeFilter value={dateRange} onChange={setDateRange} />
 
                     <button className={styles.btnSecondary} style={{ gap: 6, whiteSpace: 'nowrap', padding: '0.5rem 1rem' }}>
@@ -569,6 +623,52 @@ function LeadsPageContent() {
                         <RefreshCw size={14} className={loading ? styles.spin : ''} />
                     </button>
                 </div>
+
+                {/* Active Date Filter Banner */}
+                {uploadDateFilter && uploadDateFilter !== 'all' && (
+                    <div style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'space-between',
+                        background: 'rgba(212, 169, 79, 0.12)',
+                        border: '1px solid rgba(212, 169, 79, 0.35)',
+                        borderRadius: 10,
+                        padding: '12px 18px',
+                        marginBottom: 18,
+                        flexWrap: 'wrap',
+                        gap: 10
+                    }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                            <Calendar size={17} color="var(--primary)" />
+                            <div>
+                                <span style={{ fontSize: 13, fontWeight: 800, color: 'var(--text-1)' }}>
+                                    Viewing Batch Uploaded On: <span style={{ color: 'var(--primary)' }}>{new Date(uploadDateFilter + 'T00:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })} ({uploadDateFilter})</span>
+                                </span>
+                                <span style={{ marginLeft: 8, fontSize: 12, background: 'rgba(255,255,255,0.08)', padding: '2px 8px', borderRadius: 10, color: 'var(--text-2)', fontWeight: 700 }}>
+                                    {filtered.length} leads in this batch
+                                </span>
+                            </div>
+                        </div>
+                        <button
+                            onClick={() => {
+                                setUploadDateFilter('');
+                                router.replace('/leads');
+                            }}
+                            style={{
+                                background: 'transparent',
+                                border: '1px solid var(--border-default)',
+                                color: 'var(--text-2)',
+                                padding: '5px 12px',
+                                borderRadius: 6,
+                                fontSize: 12,
+                                cursor: 'pointer',
+                                fontWeight: 700
+                            }}
+                        >
+                            ✕ Reset to All {leads.length} Leads
+                        </button>
+                    </div>
+                )}
 
                 {/* ── Bulk action bar ── */}
                 {selected.size > 0 && (

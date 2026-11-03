@@ -219,10 +219,15 @@ def get_communication_rules(request: Request):
 class CommunicationRulesIn(BaseModel):
     quiet_hours_start: str = "09:00"
     quiet_hours_end: str = "20:00"
-    timezone: str = "America/Chicago"
+    timezone: str = "America/New_York"
     max_sms_per_day: int = 5
     max_calls_per_day: int = 3
     channels_enabled: dict = {"sms": True, "whatsapp": True, "call": True, "email": False}
+    campaign_start_time: str = "09:00"
+    campaign_end_time: str = "18:00"
+    campaign_days: list = ["mon", "tue", "wed", "thu", "fri"]
+    campaign_active: bool = True
+    campaign_daily_limit: int = 50
 
 
 @router.put("/communication-rules")
@@ -235,15 +240,28 @@ def update_communication_rules(body: CommunicationRulesIn, request: Request):
         cur.execute(
             """
             INSERT INTO communication_rules
-                (business_id, quiet_hours_start, quiet_hours_end, timezone, max_sms_per_day, max_calls_per_day, channels_enabled, updated_at)
-            VALUES (%s, %s, %s, %s, %s, %s, %s, NOW())
+                (business_id, quiet_hours_start, quiet_hours_end, timezone, max_sms_per_day, max_calls_per_day,
+                 channels_enabled, campaign_start_time, campaign_end_time, campaign_days, campaign_active,
+                 campaign_daily_limit, updated_at)
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, NOW())
             ON CONFLICT (business_id) DO UPDATE SET
-                quiet_hours_start = EXCLUDED.quiet_hours_start, quiet_hours_end = EXCLUDED.quiet_hours_end,
-                timezone = EXCLUDED.timezone, max_sms_per_day = EXCLUDED.max_sms_per_day,
-                max_calls_per_day = EXCLUDED.max_calls_per_day, channels_enabled = EXCLUDED.channels_enabled, updated_at = NOW()
+                quiet_hours_start = EXCLUDED.quiet_hours_start,
+                quiet_hours_end = EXCLUDED.quiet_hours_end,
+                timezone = EXCLUDED.timezone,
+                max_sms_per_day = EXCLUDED.max_sms_per_day,
+                max_calls_per_day = EXCLUDED.max_calls_per_day,
+                channels_enabled = EXCLUDED.channels_enabled,
+                campaign_start_time = EXCLUDED.campaign_start_time,
+                campaign_end_time = EXCLUDED.campaign_end_time,
+                campaign_days = EXCLUDED.campaign_days,
+                campaign_active = EXCLUDED.campaign_active,
+                campaign_daily_limit = EXCLUDED.campaign_daily_limit,
+                updated_at = NOW()
             """,
             (business_id, body.quiet_hours_start, body.quiet_hours_end, body.timezone,
-             body.max_sms_per_day, body.max_calls_per_day, Json(body.channels_enabled)),
+             body.max_sms_per_day, body.max_calls_per_day, Json(body.channels_enabled),
+             body.campaign_start_time, body.campaign_end_time, Json(body.campaign_days),
+             body.campaign_active, body.campaign_daily_limit),
         )
         conn.commit()
         cur.execute("SELECT * FROM communication_rules WHERE business_id = %s", (business_id,))

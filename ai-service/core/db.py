@@ -7,7 +7,7 @@ import psycopg2.pool
 
 logger = logging.getLogger(__name__)
 
-DATABASE_URL        = os.environ.get("DATABASE_URL", "")
+DATABASE_URL        = os.environ.get("DATABASE_URL") or "postgresql://aicrm_app:aicrm_password@localhost:5432/aicrm"
 DEFAULT_BUSINESS_ID = os.environ.get("DEFAULT_BUSINESS_ID", "bus_001")
 
 _pool: psycopg2.pool.ThreadedConnectionPool = None

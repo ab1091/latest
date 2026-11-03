@@ -90,18 +90,19 @@ async def send_appointment_confirmation(
 
     body = (
         f"Hi {first_name},\n\n"
-        f"Your appointment for {service_name} is confirmed for {when}.\n\n"
+        f"Your discovery consultation for {service_name} is confirmed for {when}.\n\n"
         f"{phone_line}"
-        f"Consultation with: Troy Vance | Farmers Insurance\n"
+        f"Consultation with: AllZone Technologies Solutions Team\n"
         f"{convo_block}\n"
-        f"If you need to reschedule or have any questions beforehand, feel free to reply directly to this email or call/text us back.\n\n"
-        f"See you then!\n\n"
-        f"Warm regards,\n"
-        f"Troy Vance\n"
-        f"Agency Owner | Farmers Insurance\n"
+        f"If you need to reschedule or have any technical questions beforehand, feel free to reply directly to this email or reach us at services@allzonetech.com.\n\n"
+        f"Looking forward to connecting!\n\n"
+        f"Best regards,\n"
+        f"Alex | Solutions Consultant\n"
+        f"AllZone Technologies\n"
+        f"https://www.allzonetech.com\n"
     )
     return await send_email(
         email,
-        f"Confirmed: Phone Consultation with Troy Vance — {when}",
+        f"Confirmed: Solutions Consultation with AllZone Technologies, {when}",
         body,
     )

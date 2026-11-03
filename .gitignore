@@ -55,6 +55,7 @@ docs/
 tasks/
 specs/
 *.bat
+*.apk
 
 # ── Local test files ──────────────────────────────────────────────────────────
 chat_test.py

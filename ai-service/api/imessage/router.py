@@ -42,7 +42,8 @@ async def imessage_webhook(request: Request):
     # it really is marked as received. A real customer's phone is never on
     # this account, so this only fires for self/internal-number testing.
     from_addr = ((data.get("handle") or {}).get("address") or "").strip()
-    if normalize_phone(from_addr) in SELF_NUMBERS:
+    from_service = ((data.get("handle") or {}).get("service") or "").strip()
+    if from_service.lower() == "imessage" and normalize_phone(from_addr) in SELF_NUMBERS:
         logger.info(f"[imessage] dropped self-account echo from {from_addr!r}")
         return {"status": "ignored-self-echo"}
 

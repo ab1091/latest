@@ -205,7 +205,7 @@ def seed():
         lead_id = item["lead_id"]
         print(f"Seeding conversation for {item['name']} ({item['phone']}, id={lead_id})...")
 
-        # 1. Update Lead Status
+        # 1. Update Lead Status (or insert if not exists)
         cur.execute("""
             UPDATE leads
             SET stage = %s,
@@ -223,6 +223,20 @@ def seed():
             item["preferred_channel"],
             lead_id
         ))
+        if cur.rowcount == 0:
+            parts = item["name"].split(" ", 1)
+            fname = parts[0]
+            lname = parts[1] if len(parts) > 1 else ""
+            cur.execute("""
+                INSERT INTO leads (
+                    id, business_id, first_name, last_name, phone,
+                    stage, sub_status, opted_out, notes, preferred_channel,
+                    tags, created_at, updated_at
+                ) VALUES (%s, 'bus_001', %s, %s, %s, %s, %s, %s, %s, %s, ARRAY['insurance', 'auto'], NOW(), NOW())
+            """, (
+                lead_id, fname, lname, item["phone"],
+                item["stage"], item["sub_status"], item["opted_out"], item["notes"], item["preferred_channel"]
+            ))
 
         # 2. Get or create conversation
         cur.execute("SELECT id FROM conversations WHERE lead_id = %s AND channel = 'sms';", (lead_id,))
@@ -244,8 +258,8 @@ def seed():
         for idx, (role, content) in enumerate(item["messages"]):
             msg_time = times[idx]
             cur.execute("""
-                INSERT INTO messages (id, conversation_id, role, content, status, channel, created_at, updated_at)
-                VALUES (%s, %s, %s, %s, 'delivered', 'sms', %s, %s);
+                INSERT INTO messages (id, conversation_id, role, content, created_at, updated_at)
+                VALUES (%s, %s, %s, %s, %s, %s);
             """, (
                 f"msg_{uuid.uuid4().hex[:12]}",
                 conv_id,

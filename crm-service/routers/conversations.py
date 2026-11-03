@@ -267,8 +267,12 @@ async def retry_message(conv_id: str, msg_id: str, request: Request, body: Optio
                 "UPDATE messages SET status = 'delivered', error_reason = NULL, channel = %s, updated_at = NOW() WHERE id = %s RETURNING *",
                 (target_channel, msg_id)
             )
-            conn.commit()
             updated = cur.fetchone()
+            cur.execute(
+                "UPDATE leads SET sub_status = 'contacted', updated_at = NOW() WHERE id = %s AND sub_status = 'new'",
+                (conv["lead_id"],)
+            )
+            conn.commit()
             return {"success": True, "data": {"message": dict(updated), "send_result": res}}
         except Exception as e:
             err = str(e)

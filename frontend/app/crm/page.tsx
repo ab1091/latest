@@ -93,32 +93,37 @@ export default function CRMPage() {
     }, [h]);
 
     // ── Load leads ────────────────────────────────────────────────────────────
-    const loadLeads = useCallback(async () => {
+    const loadLeads = useCallback(async (silent = false) => {
         if (!accessToken) return;
-        setLeadsLoading(true);
+        if (!silent) setLeadsLoading(true);
         try {
             const res = await fetch(`/api/leads`, { headers: h });
             const d   = await res.json();
             if (d.success) setLeads(d.data.leads);
         } catch {}
-        setLeadsLoading(false);
+        if (!silent) setLeadsLoading(false);
     }, [h, accessToken]);
 
     // ── Load call history ─────────────────────────────────────────────────────
-    const loadCallHistory = useCallback(async () => {
-        setCallsLoading(true);
+    const loadCallHistory = useCallback(async (silent = false) => {
+        if (!silent) setCallsLoading(true);
         try {
             const res = await fetch('/api/crm/calls', { headers: h });
             const d   = await res.json();
             if (d.success) setCallHistory(d.data.calls);
         } catch {}
-        setCallsLoading(false);
+        if (!silent) setCallsLoading(false);
     }, [h]);
 
     useEffect(() => {
         if (!accessToken) return;
-        loadLeads();
-        loadCallHistory();
+        loadLeads(false);
+        loadCallHistory(false);
+        const timer = setInterval(() => {
+            loadLeads(true);
+            loadCallHistory(true);
+        }, 4000);
+        return () => clearInterval(timer);
     }, [accessToken, loadLeads, loadCallHistory]);
 
     useEffect(() => {

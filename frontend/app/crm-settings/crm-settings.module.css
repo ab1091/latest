@@ -250,3 +250,156 @@
     font-weight: 700;
     flex: 1;
 }
+
+/* Campaign Schedule & Hours Styles */
+.heroStatusCard {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 20px;
+    border-radius: var(--r-lg);
+    background: linear-gradient(135deg, rgba(37, 99, 235, 0.08) 0%, rgba(2, 132, 199, 0.04) 100%);
+    border: 1px solid rgba(37, 99, 235, 0.25);
+    margin-bottom: 8px;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.heroStatusLeft {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.statusPulseDot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: #10B981;
+    box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
+    animation: pulseGlow 2s infinite;
+}
+
+.statusPulseDotInactive {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: #F59E0B;
+}
+
+.statusPulseDotDisabled {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: #EF4444;
+}
+
+@keyframes pulseGlow {
+    0% {
+        box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
+    }
+    70% {
+        box-shadow: 0 0 0 8px rgba(16, 185, 129, 0);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(16, 185, 129, 0);
+    }
+}
+
+.statusTitle {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--text-1);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.statusSubtitle {
+    font-size: 12px;
+    color: var(--text-3);
+    margin-top: 2px;
+}
+
+.scheduleSection {
+    background: var(--bg-surface);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--r-md);
+    padding: 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.sectionHeading {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13.5px;
+    font-weight: 700;
+    color: var(--text-1);
+    margin-bottom: 4px;
+}
+
+.presetBar {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-top: 6px;
+}
+
+.presetBtn {
+    padding: 5px 10px;
+    font-size: 11.5px;
+    font-weight: 600;
+    border-radius: 6px;
+    background: var(--bg-surface);
+    border: 1px solid var(--border-default);
+    color: var(--text-2);
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.presetBtn:hover {
+    background: var(--primary-subtle);
+    color: var(--primary-text);
+    border-color: var(--primary);
+}
+
+.daysGrid {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+}
+
+.dayBtn {
+    padding: 8px 14px;
+    font-size: 12px;
+    font-weight: 700;
+    border-radius: 8px;
+    border: 1px solid var(--border-default);
+    background: var(--bg-surface);
+    color: var(--text-3);
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.dayBtnActive {
+    background: var(--primary);
+    color: var(--on-primary);
+    border-color: var(--primary);
+}
+
+.simBadge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 8px;
+    border-radius: 6px;
+    background: rgba(16, 185, 129, 0.1);
+    color: #065F46;
+    font-size: 11px;
+    font-weight: 600;
+    border: 1px solid rgba(16, 185, 129, 0.25);
+}
+

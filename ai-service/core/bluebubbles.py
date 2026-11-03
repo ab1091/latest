@@ -78,40 +78,63 @@ async def send_message(to: str, body: str) -> dict:
     body = sanitize_text(body)
 
     phone = normalize_phone(to)
-    # Strictly iMessage ONLY per explicit instruction ("no twwillio jut i meesge pleae onlyy")
-    chat_guid = f"iMessage;-;{phone}"
-    temp_guid = uuid.uuid4().hex
 
-    try:
+    async def _send_to_bb(guid: str, t_guid: str):
         async with httpx.AsyncClient(timeout=_RESPONSE_TIMEOUT) as client:
-            res = await client.post(
+            return await client.post(
                 f"{BB_SERVER_URL}/api/v1/message/text",
                 params={"password": BB_PASSWORD},
+                headers={"ngrok-skip-browser-warning": "true"},
                 json={
-                    "chatGuid": chat_guid,
+                    "chatGuid": guid,
                     "message": body,
                     "method": BB_SEND_METHOD,
-                    "tempGuid": temp_guid,
+                    "tempGuid": t_guid,
                 },
             )
+
+    # 1. Primary: Native cellular SMS text message via paired iPhone SIM
+    # Guarantees delivery as a standard text message to all devices:
+    # Android, flip phones, and iPhone users who do not use or have disabled iMessage.
+    sms_guid = f"SMS;-;{phone}"
+    sms_temp_guid = uuid.uuid4().hex
+    try:
+        sms_res = await _send_to_bb(sms_guid, sms_temp_guid)
+        if sms_res.is_success:
+            s_data = sms_res.json()
+            if not s_data.get("status") or s_data["status"] < 400:
+                s_id = ((s_data.get("data") or {}).get("guid")) if isinstance(s_data.get("data"), dict) else None
+                logger.info(f"[bluebubbles] ✓ Native SMS text message sent to {phone} chatGuid={sms_guid} id={s_id}")
+                return {"sid": s_id, "ok": True, "service": "SMS"}
+            else:
+                logger.warning(f"[bluebubbles] Native SMS returned error: {s_data.get('message')}")
     except httpx.TimeoutException:
         logger.warning(
-            f"[bluebubbles] response timed out after {_RESPONSE_TIMEOUT}s for chatGuid={chat_guid} "
-            f"tempGuid={temp_guid} - treating as sent (BlueBubbles fallback AppleScript delivers "
-            f"in ~1-3s regardless; confirmation channel hung)"
+            f"[bluebubbles] SMS send timed out after {_RESPONSE_TIMEOUT}s for chatGuid={sms_guid} - treating as sent"
         )
-        return {"sid": None, "ok": True, "unconfirmed": True}
-    except httpx.RequestError as e:
-        raise RuntimeError(f"BlueBubbles unreachable: {e}")
+        return {"sid": None, "ok": True, "service": "SMS", "unconfirmed": True}
+    except Exception as e:
+        logger.warning(f"[bluebubbles] Native SMS attempt failed for {phone}: {e}")
 
-    if res.is_success:
-        data = res.json()
-        if not data.get("status") or data["status"] < 400:
-            message_id = ((data.get("data") or {}).get("guid")) if isinstance(data.get("data"), dict) else None
-            logger.info(f"[bluebubbles] iMessage sent to {phone} chatGuid={chat_guid} id={message_id}")
-            return {"sid": message_id, "ok": True}
-        err_msg = data.get("message") or data.get("error", {}).get("message") or str(data)
-        raise RuntimeError(f"BlueBubbles iMessage rejected send: {err_msg}")
-    else:
-        raise RuntimeError(f"BlueBubbles iMessage error: {res.status_code} {res.text}")
+    # 2. Secondary fallback: iMessage
+    chat_guid = f"iMessage;-;{phone}"
+    temp_guid = uuid.uuid4().hex
+    logger.info(f"[bluebubbles] Falling back to iMessage for {phone} ({chat_guid})...")
+    try:
+        res = await _send_to_bb(chat_guid, temp_guid)
+        if res.is_success:
+            data = res.json()
+            if not data.get("status") or data["status"] < 400:
+                message_id = ((data.get("data") or {}).get("guid")) if isinstance(data.get("data"), dict) else None
+                logger.info(f"[bluebubbles] iMessage sent to {phone} chatGuid={chat_guid} id={message_id}")
+                return {"sid": message_id, "ok": True, "service": "iMessage"}
+    except httpx.TimeoutException:
+        logger.warning(
+            f"[bluebubbles] iMessage response timed out after {_RESPONSE_TIMEOUT}s for {chat_guid} - treating as sent"
+        )
+        return {"sid": None, "ok": True, "service": "iMessage", "unconfirmed": True}
+    except Exception as e:
+        logger.warning(f"[bluebubbles] iMessage fallback error for {phone}: {e}")
+
+    raise RuntimeError(f"BlueBubbles send failed for {phone}: both native SMS text and iMessage attempts failed")
 

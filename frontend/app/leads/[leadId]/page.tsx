@@ -39,6 +39,18 @@ function formatCountdown(ms: number): string {
     return `${minutes}m ${seconds}s`;
 }
 
+function formatDeliveryError(reason?: string | null): string {
+    if (!reason) return '';
+    const lower = reason.toLowerCase();
+    if (lower.includes('bluebubbles') || lower.includes('message send error') || lower.includes('not registered') || lower.includes('500') || lower.includes('502')) {
+        return 'Non-iMessage Number (Android or Landline)';
+    }
+    if (lower.includes('rate limit') || lower.includes('velocity')) {
+        return 'Hourly Velocity Limit Reached';
+    }
+    return reason.slice(0, 60);
+}
+
 interface Lead {
     id: string; first_name: string; last_name: string; email: string; phone: string;
     tags: string[]; sub_status: string; stage: string; notes: string; preferred_channel: string;
@@ -95,9 +107,9 @@ export default function LeadWorkspacePage() {
     const h = useMemo(() => ({ Authorization: `Bearer ${accessToken}` }), [accessToken]);
     const hJson = useMemo(() => ({ ...h, 'Content-Type': 'application/json' }), [h]);
 
-    const load = useCallback(async () => {
+    const load = useCallback(async (opts?: { silent?: boolean }) => {
         if (!accessToken) return;
-        setLoading(true);
+        if (!opts?.silent) setLoading(true);
         try {
             const [leadRes, journeyRes, activityRes, notesRes, tasksRes] = await Promise.all([
                 fetch(`/api/leads/${leadId}`, { headers: h }),
@@ -120,10 +132,19 @@ export default function LeadWorkspacePage() {
             const t = await tasksRes.json();
             if (t.success) setTasks(t.data.tasks || []);
         } catch {}
-        setLoading(false);
+        if (!opts?.silent) setLoading(false);
     }, [accessToken, leadId, h]);
 
     useEffect(() => { load(); }, [load]);
+
+    // Live auto-refresh: poll lead detail, messages, and journey silently every 3s
+    useEffect(() => {
+        if (!accessToken) return;
+        const id = setInterval(() => {
+            load({ silent: true });
+        }, 3000);
+        return () => clearInterval(id);
+    }, [accessToken, load]);
 
     const [retryingMsgId, setRetryingMsgId] = useState<string | null>(null);
     const [safetyStatus, setSafetyStatus] = useState<any>(null);
@@ -138,7 +159,7 @@ export default function LeadWorkspacePage() {
 
     useEffect(() => {
         fetchSafetyStatus();
-        const timer = setInterval(fetchSafetyStatus, 15000);
+        const timer = setInterval(fetchSafetyStatus, 5000);
         return () => clearInterval(timer);
     }, [fetchSafetyStatus]);
 
@@ -535,7 +556,7 @@ export default function LeadWorkspacePage() {
                                                         {threadMessages.length === 0 ? (
                                                             <div style={{ fontSize: 12, color: 'var(--text-4)', padding: 12 }}>Loading email...</div>
                                                         ) : threadMessages.map((m: any) => {
-                                                            let subject = "Quote Breakdown & Policy Options - Farmers Insurance";
+                                                            let subject = "Solution Proposal & Engineering Overview - AllZone Technologies";
                                                             let body = m.content;
                                                             if (m.content.startsWith("Subject:")) {
                                                                 const parts = m.content.split("\n\n");
@@ -550,7 +571,7 @@ export default function LeadWorkspacePage() {
                                                                         <div>
                                                                             <div className={styles.emailSubjectTitle}>{subject}</div>
                                                                             <div className={styles.emailMetaRow}>
-                                                                                <span><strong>From:</strong> Troy Vance &lt;troy@farmersinsurance.com&gt;</span>
+                                                                                <span><strong>From:</strong> AllZone Technologies &lt;services@allzonetech.com&gt;</span>
                                                                                 <span><strong>To:</strong> {lead.first_name} {lead.last_name} &lt;{lead.email}&gt;</span>
                                                                                 {m.created_at && (
                                                                                     <span><strong>Sent:</strong> {parseApiDate(m.created_at).toLocaleString([], { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit' })}</span>
@@ -593,7 +614,7 @@ export default function LeadWorkspacePage() {
                                                                         color: '#ef4444'
                                                                     }}>
                                                                         <div style={{ fontWeight: 600, marginBottom: 2 }}>
-                                                                            ⚠️ Delivery Failed {m.error_reason ? `(${m.error_reason.slice(0, 60)})` : ''}
+                                                                            ⚠️ Delivery Failed: {formatDeliveryError(m.error_reason)}
                                                                         </div>
                                                                         <div style={{ display: 'flex', gap: 6, marginTop: 4 }}>
                                                                             <button
@@ -609,7 +630,7 @@ export default function LeadWorkspacePage() {
                                                                                     fontWeight: 600,
                                                                                     cursor: 'pointer'
                                                                                 }}>
-                                                                                {retryingMsgId === m.id ? 'Retrying...' : 'Retry iMessage'}
+                                                                                {retryingMsgId === m.id ? 'Retrying...' : 'Retry Send'}
                                                                             </button>
                                                                         </div>
                                                                     </div>

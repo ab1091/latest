@@ -176,6 +176,51 @@ def get_pipeline(request: Request):
         cur.close(); conn.close()
 
 
+# GET /api/leads/daily-stats — Per-day uploaded leads breakdown and performance metrics
+@router.get("/daily-stats")
+def get_daily_lead_stats(request: Request):
+    scope = get_scope(request)
+    conn = get_conn()
+    cur  = dict_cursor(conn)
+    try:
+        query = """
+            SELECT 
+                TO_CHAR(l.created_at, 'YYYY-MM-DD') AS upload_date,
+                count(*) AS total_uploaded,
+                count(*) FILTER (WHERE l.sub_status = 'new') AS new_count,
+                count(*) FILTER (WHERE l.sub_status = 'contacted') AS contacted_count,
+                count(*) FILTER (WHERE l.sub_status IN ('followed_up', 'follow_up_sent', 'stale') OR EXISTS (
+                    SELECT 1 FROM messages m
+                    JOIN conversations c ON c.id = m.conversation_id
+                    WHERE c.lead_id = l.id AND m.role = 'agent' AND m.status = 'delivered'
+                    GROUP BY c.id HAVING count(*) >= 2
+                )) AS followup_count,
+                count(*) FILTER (WHERE l.sub_status = 'responded' OR l.stage = 'connected' OR EXISTS (
+                    SELECT 1 FROM messages m
+                    JOIN conversations c ON c.id = m.conversation_id
+                    WHERE c.lead_id = l.id AND m.role = 'user'
+                )) AS responded_count,
+                count(*) FILTER (WHERE l.stage IN ('qualified', 'quoted', 'appointment_scheduled', 'converted', 'closed')) AS qualified_count,
+                count(*) FILTER (WHERE l.stage = 'dead' OR l.opted_out IS TRUE) AS dead_count
+            FROM leads l
+            WHERE l.business_id = %s
+        """
+        params = [scope["business_id"]]
+        if not scope["is_admin"]:
+            query += " AND l.created_by = %s"
+            params.append(scope["user_id"])
+            
+        query += """
+            GROUP BY TO_CHAR(l.created_at, 'YYYY-MM-DD')
+            ORDER BY upload_date DESC
+        """
+        cur.execute(query, params)
+        rows = [dict(r) for r in cur.fetchall()]
+        return {"success": True, "data": {"daily_batches": rows}}
+    finally:
+        cur.close(); conn.close()
+
+
 # DELETE /api/leads/clear-all
 @router.delete("/clear-all")
 def clear_all_leads(request: Request):
