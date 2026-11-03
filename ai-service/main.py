@@ -69,23 +69,20 @@ async def lifespan(app: FastAPI):
         from core.callback_scheduler import start_scheduler
         start_scheduler()
 
-    # Claw Messenger's persistent websocket connection is intentionally NOT
-    # started — it's being replaced by BlueBubbles (core/bluebubbles.py),
-    # which is a stateless REST API with no connection lifecycle to manage,
-    # so there's nothing to start here for it. Left as a two-line revert
-    # (start_claw_messenger()/stop_claw_messenger(), same DISABLE_BACKGROUND_
-    # JOBS-gated shape as the scheduler above) rather than deleted, in case
-    # BlueBubbles needs to be rolled back.
-    # from core.claw_messenger import start_claw_messenger
-    # start_claw_messenger()
+    # TextBee Android SMS Gateway inbound sync listener
+    if os.getenv("TEXTBEE_API_KEY"):
+        from core import textbee
+        from api.sms.router import _handle_inbound_message
+        textbee.start_inbound_listener(_handle_inbound_message, interval_seconds=10)
 
     yield
 
     if os.environ.get("DISABLE_BACKGROUND_JOBS", "").lower() not in ("1", "true"):
         from core.callback_scheduler import stop_scheduler
         stop_scheduler()
-    # from core.claw_messenger import stop_claw_messenger
-    # await stop_claw_messenger()
+
+    from core import textbee
+    textbee.stop_inbound_listener()
     logger.info("Shutting down Voice Bot Service...")
 
 

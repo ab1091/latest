@@ -2520,11 +2520,52 @@ async def sms_inbound(
     return PlainTextResponse("<?xml version='1.0'?><Response></Response>", media_type="text/xml")
 
 
-# Sendblue's inbound webhook used to live here (POST /api/sms/inbound-sendblue).
-# Claw Messenger has no webhook for inbound — messages are pushed over the
-# same persistent WebSocket used for sending (see core/claw_messenger.py's
-# _listen(), which calls _handle_inbound_message() directly), so there's no
-# HTTP endpoint for it anymore.
+# ── POST /api/sms/inbound-textbee — TextBee Android SMS Gateway webhook ─────────
+
+@router.post("/inbound-textbee")
+async def sms_inbound_textbee(request: Request):
+    """
+    Receives incoming SMS webhook from TextBee Android device (MESSAGE_RECEIVED event).
+    """
+    try:
+        payload = await request.json()
+    except Exception:
+        raise HTTPException(status_code=400, detail="Invalid JSON payload")
+
+    from_phone = (payload.get("sender") or payload.get("from") or "").strip()
+    message = (payload.get("message") or payload.get("body") or "").strip()
+    sms_id = payload.get("smsId") or payload.get("_id")
+
+    if not from_phone or not message:
+        return {"status": "ignored", "reason": "missing sender or message"}
+
+    # Ignore automated verification codes
+    digits = "".join(c for c in from_phone if c.isdigit())
+    if len(digits) < 7:
+        return {"status": "ignored", "reason": "non-phone sender"}
+
+    # Deduplicate via processed_inbound_sms
+    if sms_id:
+        from core.db import get_conn, get_dict_cursor as dict_cursor
+        conn = get_conn()
+        cur = dict_cursor(conn)
+        try:
+            cur.execute("SELECT 1 FROM processed_inbound_sms WHERE sms_id = %s", (sms_id,))
+            if cur.fetchone():
+                return {"status": "already_processed"}
+            cur.execute(
+                "INSERT INTO processed_inbound_sms (sms_id, sender, message) VALUES (%s, %s, %s) ON CONFLICT DO NOTHING",
+                (sms_id, from_phone, message)
+            )
+            conn.commit()
+        finally:
+            cur.close()
+            conn.close()
+
+    logger.info(f"[textbee:webhook] Received inbound text from {from_phone}: {message[:40]}")
+    await _handle_inbound_message(from_phone, message, "sms")
+    return {"status": "ok"}
+
 
 
 # ── POST /api/sms/simulate-inbound — staff testing helper ────────────────────
