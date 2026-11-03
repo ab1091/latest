@@ -221,10 +221,27 @@ async def _send_sms(to: str, body: str, channel: str = "sms", force: bool = Fals
 
         try:
             sms_provider = os.getenv("SMS_GATEWAY_PROVIDER", "textbee").lower()
-            if sms_provider == "textbee":
-                res = await textbee.send_message(raw_phone, body)
+            if sms_provider in ("textbee", "android"):
+                try:
+                    res = await textbee.send_message(raw_phone, body)
+                except Exception as tb_err:
+                    bb_url = os.getenv("BB_SERVER_URL", "")
+                    if bb_url and "not_found" not in bb_url and os.getenv("ENABLE_GATEWAY_FALLBACK", "true").lower() == "true":
+                        logger.warning(f"[sms:send] Android TextBee failed ({tb_err}) — falling back to iMessage/BlueBubbles...")
+                        res = await bluebubbles.send_message(raw_phone, body)
+                    else:
+                        raise tb_err
+            elif sms_provider in ("bluebubbles", "imessage", "apple"):
+                try:
+                    res = await bluebubbles.send_message(raw_phone, body)
+                except Exception as bb_err:
+                    if os.getenv("TEXTBEE_API_KEY") and os.getenv("ENABLE_GATEWAY_FALLBACK", "true").lower() == "true":
+                        logger.warning(f"[sms:send] iMessage failed ({bb_err}) — falling back to Android TextBee...")
+                        res = await textbee.send_message(raw_phone, body)
+                    else:
+                        raise bb_err
             else:
-                res = await bluebubbles.send_message(raw_phone, body)
+                res = await textbee.send_message(raw_phone, body)
             humanoid_sender.record_outbound_send()
             await circuit_breaker.record_success()
             return res
