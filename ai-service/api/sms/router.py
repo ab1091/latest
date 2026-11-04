@@ -240,6 +240,20 @@ async def _send_sms(to: str, body: str, channel: str = "sms", force: bool = Fals
                         res = await textbee.send_message(raw_phone, body)
                     else:
                         raise bb_err
+            elif sms_provider in ("iphone", "apple_shortcut", "shortcuts"):
+                task_id = f"task_{uuid.uuid4().hex[:12]}"
+                conn = get_conn()
+                cur = dict_cursor(conn)
+                try:
+                    cur.execute("""
+                        INSERT INTO iphone_sms_queue (id, phone, message, status)
+                        VALUES (%s, %s, %s, 'pending')
+                    """, (task_id, raw_phone, body))
+                    conn.commit()
+                finally:
+                    cur.close(); conn.close()
+                logger.info(f"[sms:send] Enqueued SMS for iPhone carrier dispatch to {raw_phone}: task={task_id}")
+                res = {"sid": task_id, "status": "queued_on_iphone", "gateway": "iphone_shortcut"}
             else:
                 res = await textbee.send_message(raw_phone, body)
             humanoid_sender.record_outbound_send()
@@ -2582,6 +2596,106 @@ async def sms_inbound_textbee(request: Request):
     logger.info(f"[textbee:webhook] Received inbound text from {from_phone}: {message[:40]}")
     await _handle_inbound_message(from_phone, message, "sms")
     return {"status": "ok"}
+
+
+# ── iPhone Apple Shortcuts Gateway Endpoints ─────────────────────────────────
+
+@router.get("/iphone/pending")
+async def get_iphone_pending_sms():
+    """
+    Called by Apple Shortcuts on the user's iPhone to fetch the next pending SMS to send.
+    """
+    conn = get_conn()
+    cur = dict_cursor(conn)
+    try:
+        cur.execute("""
+            SELECT id, phone, message FROM iphone_sms_queue
+            WHERE status = 'pending'
+            ORDER BY created_at ASC LIMIT 1
+        """)
+        row = cur.fetchone()
+        if row:
+            return {
+                "has_message": True,
+                "task_id": row["id"],
+                "phone": row["phone"],
+                "message": row["message"]
+            }
+        return {"has_message": False, "task_id": "", "phone": "", "message": ""}
+    finally:
+        cur.close()
+        conn.close()
+
+
+class IPhoneReportBody(BaseModel):
+    task_id: str
+    status: str = "sent"
+
+
+@router.post("/iphone/report")
+async def report_iphone_sms(body: IPhoneReportBody):
+    """
+    Called by Apple Shortcuts after sending the message through the iPhone carrier SIM.
+    """
+    conn = get_conn()
+    cur = dict_cursor(conn)
+    try:
+        cur.execute("""
+            UPDATE iphone_sms_queue
+            SET status = %s, sent_at = NOW()
+            WHERE id = %s
+        """, (body.status, body.task_id))
+        conn.commit()
+        logger.info(f"[iphone:gateway] Task {body.task_id} marked as {body.status} by iPhone")
+        return {"ok": True}
+    finally:
+        cur.close()
+        conn.close()
+
+
+class IPhoneInboundBody(BaseModel):
+    sender: str
+    message: str
+
+
+@router.post("/iphone/inbound")
+async def inbound_iphone_sms(body: IPhoneInboundBody):
+    """
+    Called by Apple Shortcuts automation when a carrier SMS is received on the iPhone.
+    """
+    sender = body.sender.strip()
+    msg = body.message.strip()
+    if not sender or not msg:
+        return {"status": "ignored"}
+    logger.info(f"[iphone:inbound] Inbound SMS from {sender}: {msg[:40]}")
+    await _handle_inbound_message(sender, msg, "sms")
+    return {"status": "ok"}
+
+
+class IPhoneEnqueueBody(BaseModel):
+    phone: str
+    message: str
+
+
+@router.post("/iphone/enqueue")
+async def enqueue_iphone_sms(body: IPhoneEnqueueBody):
+    """
+    Helper to manually queue an SMS for the iPhone to send.
+    """
+    task_id = f"task_{uuid.uuid4().hex[:12]}"
+    conn = get_conn()
+    cur = dict_cursor(conn)
+    try:
+        cur.execute("""
+            INSERT INTO iphone_sms_queue (id, phone, message, status)
+            VALUES (%s, %s, %s, 'pending')
+        """, (task_id, body.phone, body.message))
+        conn.commit()
+        logger.info(f"[iphone:queue] Manually queued task {task_id} for {body.phone}")
+        return {"ok": True, "task_id": task_id}
+    finally:
+        cur.close()
+        conn.close()
 
 
 
