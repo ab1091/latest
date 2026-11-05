@@ -371,3 +371,10 @@ this repo, any doc, or any script.
 | Google | OAuth login + Calendar API |
 
 Not currently used: **ElevenLabs**, **HubSpot** (see note under Architecture).
+
+---
+
+## Cellular & SMS Gateways Documentation
+
+For an in-depth guide on the physical hardware gateways, packet flows, dual-SIM orchestration, and Apple Shortcuts automation:
+- 📖 [Cellular & SMS Gateways Architecture & Operations Manual](CELLULAR_GATEWAYS_ARCHITECTURE_AND_SETUP_GUIDE.md)
