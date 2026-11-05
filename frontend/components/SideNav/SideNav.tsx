@@ -23,6 +23,7 @@ import {
     Plug,
     Building2,
     ArrowLeftRight,
+    Smartphone,
 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
@@ -72,7 +73,8 @@ const NAV_SECTIONS: NavSection[] = [
     {
         title: 'Communication',
         items: [
-            { label: 'Communication', href: '/communication', icon: MessageCircle, minRole: 'staff', moduleKey: 'communication' },
+            { label: 'Conversations', href: '/communication', icon: MessageCircle, minRole: 'staff', moduleKey: 'communication' },
+            { label: 'Cellular & SMS Gateways', href: '/crm-settings?tab=gateways', icon: Smartphone, minRole: 'admin', moduleKey: 'crm_settings' },
         ],
     },
     {

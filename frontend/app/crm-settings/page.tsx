@@ -113,6 +113,16 @@ export default function CrmSettingsPage() {
         if (user && !['admin', 'super_admin'].includes(user.role) && !hasModuleAccess(user, 'crm_settings', 'admin')) router.replace('/leads');
     }, [isLoading, accessToken, user, router]);
 
+    useEffect(() => {
+        if (typeof window !== 'undefined') {
+            const params = new URLSearchParams(window.location.search);
+            const t = params.get('tab') as Tab;
+            if (t && ['campaign', 'gateways', 'communication', 'statuses', 'assignment', 'scoring'].includes(t)) {
+                setTab(t);
+            }
+        }
+    }, []);
+
     const h = useCallback(() => ({ Authorization: `Bearer ${accessToken}`, 'Content-Type': 'application/json' }), [accessToken]);
 
     const load = useCallback(async () => {

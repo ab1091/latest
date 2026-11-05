@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
 import { SideNav } from '@/components/SideNav/SideNav';
@@ -282,6 +283,13 @@ export default function SettingsPage() {
                                 {l}
                             </button>
                         ))}
+                        <Link
+                            href="/crm-settings?tab=gateways"
+                            className={styles.tabBtn}
+                            style={{ color: 'var(--primary)', fontWeight: 700, display: 'flex', alignItems: 'center', gap: 6, textDecoration: 'none' }}
+                        >
+                            📱 Cellular Gateways ➔
+                        </Link>
                     </div>
 
                     {/* Content Area */}
@@ -348,6 +356,22 @@ export default function SettingsPage() {
 
                         {tab === 'integrations' && (
                             <div className={styles.integrationList}>
+                                <div style={{ padding: '16px 20px', borderRadius: 12, background: 'linear-gradient(135deg, rgba(16, 185, 129, 0.08) 0%, rgba(59, 130, 246, 0.08) 100%)', border: '1px solid rgba(16, 185, 129, 0.25)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 12 }}>
+                                    <div>
+                                        <div style={{ fontSize: 14, fontWeight: 700, color: 'var(--text-1)' }}>
+                                            📱 Cellular & SMS Gateways (Android POCO & BlueBubbles Mac/iPhone)
+                                        </div>
+                                        <div style={{ fontSize: 12, color: 'var(--text-3)', marginTop: 2 }}>
+                                            Configure physical dual-SIM carrier SMS, BlueBubbles iMessage bridge, and Apple Shortcuts autonomous queues.
+                                        </div>
+                                    </div>
+                                    <Link
+                                        href="/crm-settings?tab=gateways"
+                                        style={{ padding: '8px 16px', borderRadius: 8, background: 'var(--primary)', color: 'var(--on-primary)', fontSize: 12.5, fontWeight: 700, textDecoration: 'none' }}
+                                    >
+                                        Configure Gateways ➔
+                                    </Link>
+                                </div>
                                 {integrations.map(i => (
                                     <div key={i.id} className={styles.integrationItem}>
                                         <div className={styles.integrationLeft}>
