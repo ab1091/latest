@@ -403,3 +403,267 @@
     border: 1px solid rgba(16, 185, 129, 0.25);
 }
 
+/* ── Cellular & SMS Gateways Styles ── */
+.gatewayCard {
+    background: var(--bg-surface);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--r-md);
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.gatewayCardActive {
+    border-color: rgba(59, 130, 246, 0.5);
+    box-shadow: 0 4px 16px rgba(59, 130, 246, 0.08);
+}
+
+.gatewayHeader {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.gatewayTitleArea {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.gatewayIconBox {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--bg-muted);
+    border: 1px solid var(--border-subtle);
+}
+
+.gatewayTitle {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--text-1);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.gatewaySubtitle {
+    font-size: 12px;
+    color: var(--text-3);
+    margin-top: 2px;
+}
+
+.badgeOnline {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 10px;
+    border-radius: 20px;
+    background: rgba(16, 185, 129, 0.12);
+    color: #059669;
+    font-size: 11.5px;
+    font-weight: 700;
+    border: 1px solid rgba(16, 185, 129, 0.3);
+}
+
+.badgeOffline {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 10px;
+    border-radius: 20px;
+    background: rgba(239, 68, 68, 0.12);
+    color: #DC2626;
+    font-size: 11.5px;
+    font-weight: 700;
+    border: 1px solid rgba(239, 68, 68, 0.3);
+}
+
+.badgeQueue {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 10px;
+    border-radius: 20px;
+    background: rgba(139, 92, 246, 0.12);
+    color: #7C3AED;
+    font-size: 11.5px;
+    font-weight: 700;
+    border: 1px solid rgba(139, 92, 246, 0.3);
+}
+
+.infoGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 12px;
+    background: var(--bg-muted);
+    padding: 14px;
+    border-radius: 8px;
+    border: 1px solid var(--border-subtle);
+}
+
+.infoItem {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+}
+
+.infoLabel {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--text-4);
+}
+
+.infoVal {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-1);
+    word-break: break-all;
+}
+
+.testBox {
+    background: var(--bg-surface);
+    border: 1px solid var(--border-default);
+    border-radius: var(--r-md);
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.codeSnippet {
+    background: #0f172a;
+    color: #38bdf8;
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-family: monospace;
+    font-size: 12px;
+    overflow-x: auto;
+    border: 1px solid rgba(56, 189, 248, 0.2);
+}
+
+.gatewayFormGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 14px;
+}
+
+.gatewayField {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.gatewayField label {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-2);
+}
+
+.gatewayField input,
+.gatewayField select,
+.gatewayField textarea {
+    background: var(--bg-surface);
+    border: 1px solid var(--border-default);
+    border-radius: var(--r-sm);
+    padding: 8px 12px;
+    font-size: 13px;
+    color: var(--text-1);
+    font-family: inherit;
+    outline: none;
+    transition: border-color 0.15s ease;
+}
+
+.gatewayField input:focus,
+.gatewayField select:focus,
+.gatewayField textarea:focus {
+    border-color: var(--primary);
+}
+
+.gatewayActionRow {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-top: 4px;
+}
+
+.successBox {
+    background: rgba(16, 185, 129, 0.08);
+    border: 1px solid rgba(16, 185, 129, 0.3);
+    border-radius: var(--r-sm);
+    padding: 10px 14px;
+    font-size: 12.5px;
+    color: #047857;
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+}
+
+.errorBox {
+    background: rgba(239, 68, 68, 0.08);
+    border: 1px solid rgba(239, 68, 68, 0.3);
+    border-radius: var(--r-sm);
+    padding: 10px 14px;
+    font-size: 12.5px;
+    color: #b91c1c;
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+}
+
+.queueTable {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 12px;
+}
+
+.queueTh {
+    text-align: left;
+    padding: 8px 10px;
+    background: var(--bg-muted);
+    color: var(--text-3);
+    font-weight: 600;
+    border-bottom: 1px solid var(--border-subtle);
+}
+
+.queueTd {
+    padding: 8px 10px;
+    border-bottom: 1px solid var(--border-subtle);
+    color: var(--text-1);
+    vertical-align: top;
+}
+
+.simPill {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 3px 8px;
+    border-radius: 6px;
+    background: rgba(16, 185, 129, 0.12);
+    color: #065F46;
+    font-size: 11.5px;
+    font-weight: 600;
+    border: 1px solid rgba(16, 185, 129, 0.25);
+}
+
+.spin {
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+
+

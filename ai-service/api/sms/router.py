@@ -2627,6 +2627,325 @@ async def get_iphone_pending_sms():
         conn.close()
 
 
+@router.get("/iphone/text")
+async def get_iphone_pending_text(auto_pop: bool = True):
+    """
+    Returns ONLY the text message string for simple 1-click or looping Shortcuts.
+    When auto_pop=True (default), it atomically pops the message and marks it as sent,
+    guaranteeing that messages are NEVER repeated and are processed strictly in FIFO order.
+    """
+    conn = get_conn()
+    cur = dict_cursor(conn)
+    try:
+        if auto_pop:
+            cur.execute("""
+                UPDATE iphone_sms_queue
+                SET status = 'sent', sent_at = NOW()
+                WHERE id = (
+                    SELECT id FROM iphone_sms_queue
+                    WHERE status = 'pending'
+                    ORDER BY created_at ASC
+                    LIMIT 1
+                    FOR UPDATE SKIP LOCKED
+                )
+                RETURNING id, phone, message;
+            """)
+            row = cur.fetchone()
+            conn.commit()
+            if row:
+                logger.info(f"[iphone:queue] Popped task {row['id']} for {row['phone']}: {row['message']}")
+                return PlainTextResponse(row["message"])
+            return PlainTextResponse("")
+        else:
+            cur.execute("SELECT message FROM iphone_sms_queue WHERE status = 'pending' ORDER BY created_at ASC LIMIT 1")
+            row = cur.fetchone()
+            return PlainTextResponse(row["message"] if row else "")
+    finally:
+        cur.close(); conn.close()
+
+
+@router.get("/iphone/next-sms")
+async def get_iphone_next_sms_lines():
+    """
+    Returns 2 lines for simple dynamic multi-number Shortcuts without JSON parsing:
+    Line 1: Destination Phone Number
+    Line 2: Message Content
+    Atomically pops the next pending message.
+    """
+    conn = get_conn()
+    cur = dict_cursor(conn)
+    try:
+        cur.execute("""
+            UPDATE iphone_sms_queue
+            SET status = 'sent', sent_at = NOW()
+            WHERE id = (
+                SELECT id FROM iphone_sms_queue
+                WHERE status = 'pending'
+                ORDER BY created_at ASC
+                LIMIT 1
+                FOR UPDATE SKIP LOCKED
+            )
+            RETURNING id, phone, message;
+        """)
+        row = cur.fetchone()
+        conn.commit()
+        if row:
+            logger.info(f"[iphone:queue] Popped next-sms {row['id']} for {row['phone']}: {row['message']}")
+            return PlainTextResponse(f"{row['phone']}\n{row['message']}")
+        return PlainTextResponse("")
+    finally:
+        cur.close(); conn.close()
+
+
+@router.get("/iphone/pop")
+async def pop_iphone_pending_sms():
+    """
+    Atomically retrieves and marks the oldest pending SMS as sent.
+    Returns JSON with has_message, task_id, phone, message.
+    Guarantees no repeated messages.
+    """
+    conn = get_conn()
+    cur = dict_cursor(conn)
+    try:
+        cur.execute("""
+            UPDATE iphone_sms_queue
+            SET status = 'sent', sent_at = NOW()
+            WHERE id = (
+                SELECT id FROM iphone_sms_queue
+                WHERE status = 'pending'
+                ORDER BY created_at ASC
+                LIMIT 1
+                FOR UPDATE SKIP LOCKED
+            )
+            RETURNING id, phone, message;
+        """)
+        row = cur.fetchone()
+        conn.commit()
+        if row:
+            logger.info(f"[iphone:queue] Popped task {row['id']} for {row['phone']}: {row['message']}")
+            return {
+                "has_message": True,
+                "task_id": row["id"],
+                "phone": row["phone"],
+                "message": row["message"]
+            }
+        return {"has_message": False, "task_id": "", "phone": "", "message": ""}
+    finally:
+        cur.close(); conn.close()
+
+
+@router.get("/iphone/status")
+async def get_iphone_queue_status():
+    """
+    Returns real-time queue health: count of pending and sent messages, and current queue state.
+    """
+    conn = get_conn()
+    cur = dict_cursor(conn)
+    try:
+        cur.execute("SELECT COUNT(*) AS count FROM iphone_sms_queue WHERE status = 'pending'")
+        pending_count = cur.fetchone()["count"]
+        cur.execute("SELECT COUNT(*) AS count FROM iphone_sms_queue WHERE status = 'sent'")
+        sent_count = cur.fetchone()["count"]
+        cur.execute("SELECT id, phone, message, created_at FROM iphone_sms_queue WHERE status = 'pending' ORDER BY created_at ASC")
+        pending_items = cur.fetchall()
+        cur.execute("SELECT id, phone, message, sent_at FROM iphone_sms_queue WHERE status = 'sent' ORDER BY sent_at DESC LIMIT 5")
+        recent_sent = cur.fetchall()
+        return {
+            "pending_count": pending_count,
+            "sent_count": sent_count,
+            "pending_items": pending_items,
+            "recent_sent": recent_sent
+        }
+    finally:
+        cur.close(); conn.close()
+
+
+class DirectSendBody(BaseModel):
+    phone: str
+    message: str
+    provider: Optional[str] = "auto"  # 'auto', 'bluebubbles', or 'textbee'
+
+
+@router.post("/direct-send")
+async def direct_send_sms_api(body: DirectSendBody):
+    """
+    Direct SMS dispatch helper for zero-touch headless sending:
+    - Automatically routes US numbers (+1...) to BlueBubbles (Irshad Mac/iPhone SIM +17373283423)
+    - Automatically routes Pakistan numbers (+92...) to TextBee (POCO Jazz SIM 03281044778)
+    - Zero shortcuts, zero button presses, 100% headless.
+    """
+    phone = body.phone.strip()
+    msg = body.message.strip()
+    provider = (body.provider or "auto").lower()
+
+    if provider == "auto":
+        if phone.startswith("+92") or phone.startswith("03") or phone.startswith("92"):
+            provider = "textbee"
+        else:
+            provider = "bluebubbles"
+
+    try:
+        if provider == "textbee":
+            res = await textbee.send_message(phone, msg)
+            return {"ok": True, "provider": "textbee (POCO Jazz SIM 0328 1044778)", "result": res}
+        else:
+            res = await bluebubbles.send_message(phone, msg)
+            return {"ok": True, "provider": "bluebubbles (Irshad iPhone SIM +17373283423)", "result": res}
+    except Exception as e:
+        logger.error(f"[sms:direct-send] Failed to send via {provider}: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+class GatewaySettingsBody(BaseModel):
+    provider: Optional[str] = None
+    enable_fallback: Optional[bool] = None
+    bb_server_url: Optional[str] = None
+    bb_password: Optional[str] = None
+    bb_send_method: Optional[str] = None
+    textbee_api_key: Optional[str] = None
+    textbee_device_id: Optional[str] = None
+
+
+@router.get("/gateway-settings")
+async def get_gateway_settings():
+    return {
+        "provider": os.getenv("SMS_GATEWAY_PROVIDER", "bluebubbles"),
+        "enable_fallback": os.getenv("ENABLE_GATEWAY_FALLBACK", "true").lower() == "true",
+        "bb_server_url": os.getenv("BB_SERVER_URL", "https://villages-roberts-apt-mountains.trycloudflare.com"),
+        "bb_password": os.getenv("BB_PASSWORD", "Abc@12345"),
+        "bb_send_method": os.getenv("BB_SEND_METHOD", "apple-script"),
+        "textbee_api_key": os.getenv("TEXTBEE_API_KEY", ""),
+        "textbee_device_id": os.getenv("TEXTBEE_DEVICE_ID", ""),
+        "textbee_base_url": os.getenv("TEXTBEE_BASE_URL", "https://api.textbee.dev/api/v1"),
+        "textbee_phone": "0328 1044778 (Jazz SIM)",
+        "bluebubbles_account": "alibaig1091@gmail.com / braveheart.century@gmail.com"
+    }
+
+
+@router.post("/gateway-settings")
+async def save_gateway_settings(body: GatewaySettingsBody):
+    env_path = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), ".env")
+    updates = {}
+    if body.provider is not None:
+        updates["SMS_GATEWAY_PROVIDER"] = body.provider
+        os.environ["SMS_GATEWAY_PROVIDER"] = body.provider
+    if body.enable_fallback is not None:
+        val = "true" if body.enable_fallback else "false"
+        updates["ENABLE_GATEWAY_FALLBACK"] = val
+        os.environ["ENABLE_GATEWAY_FALLBACK"] = val
+    if body.bb_server_url is not None:
+        updates["BB_SERVER_URL"] = body.bb_server_url
+        os.environ["BB_SERVER_URL"] = body.bb_server_url
+        import core.bluebubbles as bb_mod
+        import core.config as cfg_mod
+        cfg_mod.BB_SERVER_URL = body.bb_server_url
+        bb_mod.BB_SERVER_URL = body.bb_server_url
+    if body.bb_password is not None:
+        updates["BB_PASSWORD"] = body.bb_password
+        os.environ["BB_PASSWORD"] = body.bb_password
+        import core.bluebubbles as bb_mod
+        import core.config as cfg_mod
+        cfg_mod.BB_PASSWORD = body.bb_password
+        bb_mod.BB_PASSWORD = body.bb_password
+    if body.bb_send_method is not None:
+        updates["BB_SEND_METHOD"] = body.bb_send_method
+        os.environ["BB_SEND_METHOD"] = body.bb_send_method
+    if body.textbee_api_key is not None:
+        updates["TEXTBEE_API_KEY"] = body.textbee_api_key
+        os.environ["TEXTBEE_API_KEY"] = body.textbee_api_key
+    if body.textbee_device_id is not None:
+        updates["TEXTBEE_DEVICE_ID"] = body.textbee_device_id
+        os.environ["TEXTBEE_DEVICE_ID"] = body.textbee_device_id
+
+    # Write to .env
+    if os.path.exists(env_path):
+        try:
+            with open(env_path, "r") as f:
+                lines = f.readlines()
+            new_lines = []
+            handled_keys = set()
+            for line in lines:
+                if "=" in line and not line.strip().startswith("#"):
+                    k, _ = line.split("=", 1)
+                    k = k.strip()
+                    if k in updates:
+                        new_lines.append(f"{k}={updates[k]}\n")
+                        handled_keys.add(k)
+                        continue
+                new_lines.append(line)
+            for k, v in updates.items():
+                if k not in handled_keys:
+                    new_lines.append(f"{k}={v}\n")
+            with open(env_path, "w") as f:
+                f.writelines(new_lines)
+        except Exception as e:
+            logger.warning(f"[gateway-settings] failed to update .env: {e}")
+
+    return {"ok": True, "saved": updates}
+
+
+class GatewayTestBody(BaseModel):
+    gateway: str  # "bluebubbles" or "textbee"
+
+
+@router.post("/gateway-test")
+async def test_gateway_connection(body: GatewayTestBody):
+    gw = body.gateway.lower()
+    if gw in ("bluebubbles", "mac", "apple"):
+        bb_url = os.getenv("BB_SERVER_URL", "")
+        bb_pwd = os.getenv("BB_PASSWORD", "")
+        if not bb_url or not bb_pwd:
+            return {"ok": False, "error": "BlueBubbles Server URL or Password not configured"}
+        try:
+            async with httpx.AsyncClient(timeout=10.0) as client:
+                res = await client.get(
+                    f"{bb_url}/api/v1/server/info",
+                    params={"password": bb_pwd},
+                    headers={"ngrok-skip-browser-warning": "true"}
+                )
+            if res.status_code == 200:
+                data = res.json()
+                return {"ok": True, "data": data.get("data", {})}
+            return {"ok": False, "error": f"HTTP {res.status_code}: {res.text[:100]}"}
+        except Exception as e:
+            return {"ok": False, "error": str(e)}
+
+    elif gw in ("textbee", "android", "poco"):
+        api_key = os.getenv("TEXTBEE_API_KEY", "")
+        dev_id = os.getenv("TEXTBEE_DEVICE_ID", "")
+        base_url = os.getenv("TEXTBEE_BASE_URL", "https://api.textbee.dev/api/v1")
+        if not api_key or not dev_id:
+            return {"ok": False, "error": "TextBee API Key or Device ID not configured"}
+        try:
+            async with httpx.AsyncClient(timeout=10.0) as client:
+                res = await client.get(
+                    f"{base_url}/gateway/devices/{dev_id}",
+                    headers={"x-api-key": api_key}
+                )
+            if res.status_code == 200:
+                data = res.json()
+                return {"ok": True, "data": data.get("data", data)}
+            return {"ok": False, "error": f"HTTP {res.status_code}: {res.text[:100]}"}
+        except Exception as e:
+            return {"ok": False, "error": str(e)}
+
+    return {"ok": False, "error": f"Unknown gateway '{body.gateway}'"}
+
+
+@router.get("/iphone/number")
+async def get_iphone_pending_number():
+    """Returns ONLY the destination phone number string for simple 1-click Shortcuts."""
+    conn = get_conn()
+    cur = dict_cursor(conn)
+    try:
+        cur.execute("SELECT phone FROM iphone_sms_queue WHERE status = 'pending' ORDER BY created_at ASC LIMIT 1")
+        row = cur.fetchone()
+        return PlainTextResponse(row["phone"] if row else "")
+    finally:
+        cur.close(); conn.close()
+
+
+
 class IPhoneReportBody(BaseModel):
     task_id: str
     status: str = "sent"
